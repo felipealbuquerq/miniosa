@@ -10,9 +10,16 @@
 #import "miniosa.h"
 
 #define kSampleRate 44100
+#define kFIFOCapacity 100
 
-void audioInputCallback(int numChannels, int numFrames, const float* samples)
+typedef struct {
+    float value;
+} Event;
+
+void audioInputCallback(int numChannels, int numFrames, const float* samples, void* callbackContext)
 {
+    AudioEngine* audioEngine = (__bridge AudioEngine*)callbackContext;
+    
     float peak = 0;
     for (int i = 0; i < numFrames; i++) {
         const float value = fabsf(samples[i * numChannels]);
@@ -22,11 +29,25 @@ void audioInputCallback(int numChannels, int numFrames, const float* samples)
         }
     }
     
-    //printf("peak %f\n", peak);
+    Event e;
+    e.value = peak;
+    mnFIFO_push(&audioEngine->fromAudioThreadFifo, &e);
+    
 }
 
-void audioOutputCallback(int numChannels, int numFrames, float* samples)
+void audioOutputCallback(int numChannels, int numFrames, float* samples, void* callbackContext)
 {
+    AudioEngine* audioEngine = (__bridge AudioEngine*)callbackContext;
+    
+    static float frequency = 0.0f;
+    
+    while (!mnFIFO_isEmpty(&audioEngine->toAudioThreadFifo))
+    {
+        Event event;
+        mnFIFO_pop(&audioEngine->toAudioThreadFifo, &event);
+        frequency = event.value;
+    }
+    
     static float phase = 0.0f;
     
     float channelPhase = 0.0f;
@@ -38,7 +59,7 @@ void audioOutputCallback(int numChannels, int numFrames, float* samples)
         for (int i = 0; i < numFrames; i++)
         {
             samples[i * numChannels + c] = sinf(channelPhase) / 2.0;
-            channelPhase += (2.0f * M_PI * 440.0 / (float)kSampleRate);
+            channelPhase += (2.0f * M_PI * frequency / (float)kSampleRate);
         }
     }
     
@@ -64,10 +85,28 @@ void audioOutputCallback(int numChannels, int numFrames, float* samples)
     self = [super init];
     
     if (self) {
-        
+        self.toneFrequency = 440.0f;
+        mnFIFO_init(&toAudioThreadFifo, kFIFOCapacity, sizeof(Event));
+        mnFIFO_init(&fromAudioThreadFifo, kFIFOCapacity, sizeof(Event));
     }
     
     return self;
+}
+
+-(void)update
+{
+    while (!mnFIFO_isEmpty(&fromAudioThreadFifo))
+    {
+        Event event;
+        mnFIFO_pop(&fromAudioThreadFifo, &event);
+        _peakLevel = event.value;
+    }
+    
+    Event event;
+    event.value = self.toneFrequency;
+    mnFIFO_push(&toAudioThreadFifo, &event);
+    
+    printf("peak level is %f\n", self.peakLevel);
 }
 
 -(void)start

@@ -90,7 +90,7 @@ void mnFree(void* ptr)
     numLiveBytes -= record->size;
     free(record->ptr);
     
-    printf("freed pointer %p, live bytes %ld\n", record->ptr, numLiveBytes);
+    printf("freed pointer %p, %s, live bytes %ld\n", record->ptr, record->tag, numLiveBytes);
     
     memset(record, 0, sizeof(mnAllocationRecord));
     

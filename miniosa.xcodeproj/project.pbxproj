@@ -15,7 +15,7 @@
 		C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */; };
 		C13D92A81B14D70E00B1FD17 /* coreaudio_io.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D929E1B14D70E00B1FD17 /* coreaudio_io.m */; };
 		C13D92A91B14D70E00B1FD17 /* coreaudio_util.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */; };
-		C13D92AA1B14D70E00B1FD17 /* lock_free_fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A11B14D70E00B1FD17 /* lock_free_fifo.c */; };
+		C13D92AA1B14D70E00B1FD17 /* fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A11B14D70E00B1FD17 /* fifo.c */; };
 		C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A31B14D70E00B1FD17 /* mem.c */; };
 		C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A61B14D70E00B1FD17 /* miniosa.m */; };
 /* End PBXBuildFile section */
@@ -36,8 +36,8 @@
 		C13D929E1B14D70E00B1FD17 /* coreaudio_io.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = coreaudio_io.m; sourceTree = "<group>"; };
 		C13D929F1B14D70E00B1FD17 /* coreaudio_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreaudio_util.h; sourceTree = "<group>"; };
 		C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = coreaudio_util.m; sourceTree = "<group>"; };
-		C13D92A11B14D70E00B1FD17 /* lock_free_fifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lock_free_fifo.c; sourceTree = "<group>"; };
-		C13D92A21B14D70E00B1FD17 /* lock_free_fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lock_free_fifo.h; sourceTree = "<group>"; };
+		C13D92A11B14D70E00B1FD17 /* fifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fifo.c; sourceTree = "<group>"; };
+		C13D92A21B14D70E00B1FD17 /* fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fifo.h; sourceTree = "<group>"; };
 		C13D92A31B14D70E00B1FD17 /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
 		C13D92A41B14D70E00B1FD17 /* mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
 		C13D92A51B14D70E00B1FD17 /* miniosa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniosa.h; sourceTree = "<group>"; };
@@ -90,8 +90,8 @@
 				C13D929E1B14D70E00B1FD17 /* coreaudio_io.m */,
 				C13D929F1B14D70E00B1FD17 /* coreaudio_util.h */,
 				C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */,
-				C13D92A11B14D70E00B1FD17 /* lock_free_fifo.c */,
-				C13D92A21B14D70E00B1FD17 /* lock_free_fifo.h */,
+				C13D92A11B14D70E00B1FD17 /* fifo.c */,
+				C13D92A21B14D70E00B1FD17 /* fifo.h */,
 				C13D92A31B14D70E00B1FD17 /* mem.c */,
 				C13D92A41B14D70E00B1FD17 /* mem.h */,
 				C13D92A51B14D70E00B1FD17 /* miniosa.h */,
@@ -195,7 +195,7 @@
 				C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */,
 				C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */,
 				C13D92891B14BB5200B1FD17 /* AppDelegate.swift in Sources */,
-				C13D92AA1B14D70E00B1FD17 /* lock_free_fifo.c in Sources */,
+				C13D92AA1B14D70E00B1FD17 /* fifo.c in Sources */,
 				C13D929A1B14C80A00B1FD17 /* AudioEngine.m in Sources */,
 				C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */,
 				C13D92A81B14D70E00B1FD17 /* coreaudio_io.m in Sources */,

@@ -20,6 +20,7 @@ mnError mnSuspend()
 {
     mnSuspendAudio();
     
+    
     return MN_NO_ERROR; //TODO: proper error code
 }
 

@@ -11,7 +11,7 @@ extern "C"
     /**
      * Single reader, single writer lock free FIFO.
      */
-    typedef struct mnLockFreeFIFO
+    typedef struct mnFIFO
     {
         int capacity;
         int elementSize;
@@ -20,42 +20,42 @@ extern "C"
         int head;
         /** Only accessed through atomic operations. Only changed by the producer thread.*/
         int tail;
-    } mnLockFreeFIFO;
+    } mnFIFO;
     
     /**
      *
      */
-    void mnLockFreeFIFO_init(mnLockFreeFIFO* fifo, int capacity, int elementSize);
+    void mnFIFO_init(mnFIFO* fifo, int capacity, int elementSize);
     
     /**
      *
      */
-    void mnLockFreeFIFO_deinit(mnLockFreeFIFO* fifo);
+    void mnFIFO_deinit(mnFIFO* fifo);
     
     /**
      *
      */
-    int mnLockFreeFIFO_isEmpty(mnLockFreeFIFO* fifo);
+    int mnFIFO_isEmpty(mnFIFO* fifo);
     
     /**
      *
      */
-    int mnLockFreeFIFO_isFull(mnLockFreeFIFO* fifo);
+    int mnFIFO_isFull(mnFIFO* fifo);
     
     /**
      *
      */
-    int mnLockFreeFIFO_getNumElements(mnLockFreeFIFO* fifo);
+    int mnFIFO_getNumElements(mnFIFO* fifo);
     
     /**
      * Called from the producer thread only.
      */
-    int mnLockFreeFIFO_push(mnLockFreeFIFO* fifo, const void* element);
+    int mnFIFO_push(mnFIFO* fifo, const void* element);
     
     /**
      * Called from the consumer thread only.
      */
-    int mnLockFreeFIFO_pop(mnLockFreeFIFO* fifo, void* element);
+    int mnFIFO_pop(mnFIFO* fifo, void* element);
     
 #ifdef __cplusplus
 } //extern "C"

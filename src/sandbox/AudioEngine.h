@@ -7,8 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "fifo.h"
 
 @interface AudioEngine : NSObject
+{
+@public
+    mnFIFO toAudioThreadFifo;
+    mnFIFO fromAudioThreadFifo;
+}
+
+@property (readonly) float peakLevel;
+
+@property float toneFrequency;
 
 +(AudioEngine*)sharedInstance;
 
@@ -19,5 +29,7 @@
 -(void)suspend;
 
 -(void)resume;
+
+-(void)update;
 
 @end

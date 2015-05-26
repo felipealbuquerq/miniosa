@@ -109,6 +109,8 @@ mnError mnDeinitialize()
     
     MN_FREE(s_instance->inputScratchBuffer);
     MN_FREE(s_instance->outputScratchBuffer);
+    
+    MN_FREE(s_instance);
 
     s_instance = NULL;
     
@@ -184,7 +186,7 @@ OSStatus mnCoreAudioInputCallback(void *inRefCon,
         /*Pass the converted buffer to the instance*/
         if (instance->audioInputCallback)
         {
-            instance->audioInputCallback(numChannels, numFramesToMix, &(instance->inputScratchBuffer)[currFrame * numChannels]);
+            instance->audioInputCallback(numChannels, numFramesToMix, &(instance->inputScratchBuffer)[currFrame * numChannels], instance->callbackContext);
         }
         
         currFrame += numFramesToMix;
@@ -231,7 +233,7 @@ OSStatus mnCoreAudioOutputCallback(void *inRefCon,
         /*prepare a new buffer*/
         if (instance->audioOutputCallback)
         {
-            instance->audioOutputCallback(numChannels, numFramesToMix, instance->outputScratchBuffer);
+            instance->audioOutputCallback(numChannels, numFramesToMix, instance->outputScratchBuffer, instance->callbackContext);
         }
 
         mnFloatToInt16(s_instance->outputScratchBuffer,

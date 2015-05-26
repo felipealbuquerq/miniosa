@@ -22,9 +22,9 @@ extern "C"
         float numberOfOutputChannels;
     } mnOptions;
     
-    typedef void (*mnAudioInputCallback)(int numChannels, int numFrames, const float* samples);
+    typedef void (*mnAudioInputCallback)(int numChannels, int numFrames, const float* samples, void* callbackContext);
     
-    typedef void (*mnAudioOutputCallback)(int numChannels, int numFrames, float* samples);
+    typedef void (*mnAudioOutputCallback)(int numChannels, int numFrames, float* samples, void* callbackContext);
     
     /**
      * Initializes and starts the audio system.

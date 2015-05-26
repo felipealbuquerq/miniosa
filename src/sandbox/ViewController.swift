@@ -14,10 +14,25 @@ class ViewController: UIViewController {
     private var suspendButton:UIButton!
     private var startButton:UIButton!
     private var stopButton:UIButton!
+    private var frequencySlider:UISlider!
+    
+    private var displayLink:CADisplayLink!
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         view = UIView()
         view.backgroundColor = UIColor.darkGrayColor()
+        
+        frequencySlider = UISlider()
+        frequencySlider.addTarget(self, action: "frequencySliderChanged:", forControlEvents: .ValueChanged)
+        view.addSubview(frequencySlider)
         
         resumeButton = UIButton()
         resumeButton.setTitle("resume", forState: .Normal)
@@ -39,6 +54,16 @@ class ViewController: UIViewController {
         stopButton.addTarget(self, action: "stopPressed:", forControlEvents: .TouchUpInside)
         view.addSubview(stopButton)
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        displayLink = CADisplayLink(target: self, selector: "displayLinkCallback")
+        displayLink.frameInterval = 2
+        displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSRunLoopCommonModes)
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        displayLink.removeFromRunLoop(NSRunLoop.mainRunLoop(), forMode: NSRunLoopCommonModes)
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -48,21 +73,26 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        var buttons = [startButton, stopButton, suspendButton, resumeButton]
+        var views = [startButton, stopButton, suspendButton, resumeButton, frequencySlider]
         
         let buttonX:CGFloat = 20
         let buttonHeight:CGFloat = 44
         let buttonSpacing:CGFloat = 50
         let buttonWidth = view.bounds.size.width - 2 * buttonX
 
-        for i in 0..<buttons.count {
+        for i in 0..<views.count {
             
-            var button = buttons[i]
+            var button = views[i]
             button.frame = CGRectMake(buttonX, buttonX + CGFloat(i) * buttonSpacing, buttonWidth, buttonHeight)
         }
     }
     
-    //MARK: Button actions
+    //MARK: Display link
+    func displayLinkCallback() {
+        AudioEngine.sharedInstance().update()
+    }
+    
+    //MARK: UI control actions
     
     func startPressed(button:UIButton) {
         AudioEngine.sharedInstance().start()
@@ -78,6 +108,10 @@ class ViewController: UIViewController {
     
     func resumePressed(button:UIButton) {
         AudioEngine.sharedInstance().resume()
+    }
+    
+    func frequencySliderChanged(slider:UISlider) {
+        AudioEngine.sharedInstance().toneFrequency = 300 + 700 * slider.value
     }
 }
 
