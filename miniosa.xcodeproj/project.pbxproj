@@ -1,0 +1,338 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C13D92891B14BB5200B1FD17 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92851B14BB5200B1FD17 /* AppDelegate.swift */; };
+		C13D928B1B14BB5200B1FD17 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92871B14BB5200B1FD17 /* ViewController.swift */; };
+		C13D928F1B14BB5B00B1FD17 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C13D928D1B14BB5B00B1FD17 /* Images.xcassets */; };
+		C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */; };
+		C13D929A1B14C80A00B1FD17 /* AudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92991B14C80A00B1FD17 /* AudioEngine.m */; };
+		C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */; };
+		C13D92A81B14D70E00B1FD17 /* coreaudio_io.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D929E1B14D70E00B1FD17 /* coreaudio_io.m */; };
+		C13D92A91B14D70E00B1FD17 /* coreaudio_util.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */; };
+		C13D92AA1B14D70E00B1FD17 /* lock_free_fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A11B14D70E00B1FD17 /* lock_free_fifo.c */; };
+		C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A31B14D70E00B1FD17 /* mem.c */; };
+		C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A61B14D70E00B1FD17 /* miniosa.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C13D925B1B14BA4100B1FD17 /* miniosa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miniosa.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C13D92851B14BB5200B1FD17 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C13D92861B14BB5200B1FD17 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C13D92871B14BB5200B1FD17 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C13D928D1B14BB5B00B1FD17 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
+		C13D92971B14C74B00B1FD17 /* ObjectiveCBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjectiveCBridge.h; sourceTree = "<group>"; };
+		C13D92981B14C80A00B1FD17 /* AudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioEngine.h; sourceTree = "<group>"; };
+		C13D92991B14C80A00B1FD17 /* AudioEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioEngine.m; sourceTree = "<group>"; };
+		C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = atomic_darwin.c; sourceTree = "<group>"; };
+		C13D929C1B14D70E00B1FD17 /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomic.h; sourceTree = "<group>"; };
+		C13D929D1B14D70E00B1FD17 /* coreaudio_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreaudio_io.h; sourceTree = "<group>"; };
+		C13D929E1B14D70E00B1FD17 /* coreaudio_io.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = coreaudio_io.m; sourceTree = "<group>"; };
+		C13D929F1B14D70E00B1FD17 /* coreaudio_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreaudio_util.h; sourceTree = "<group>"; };
+		C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = coreaudio_util.m; sourceTree = "<group>"; };
+		C13D92A11B14D70E00B1FD17 /* lock_free_fifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lock_free_fifo.c; sourceTree = "<group>"; };
+		C13D92A21B14D70E00B1FD17 /* lock_free_fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lock_free_fifo.h; sourceTree = "<group>"; };
+		C13D92A31B14D70E00B1FD17 /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
+		C13D92A41B14D70E00B1FD17 /* mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
+		C13D92A51B14D70E00B1FD17 /* miniosa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniosa.h; sourceTree = "<group>"; };
+		C13D92A61B14D70E00B1FD17 /* miniosa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = miniosa.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C13D92581B14BA4100B1FD17 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C13D92521B14BA4100B1FD17 = {
+			isa = PBXGroup;
+			children = (
+				C13D925C1B14BA4100B1FD17 /* Products */,
+				C13D928C1B14BB5B00B1FD17 /* res */,
+				C13D92801B14BB5200B1FD17 /* src */,
+			);
+			sourceTree = "<group>";
+		};
+		C13D925C1B14BA4100B1FD17 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C13D925B1B14BA4100B1FD17 /* miniosa.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C13D92801B14BB5200B1FD17 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C13D92811B14BB5200B1FD17 /* miniosa */,
+				C13D92841B14BB5200B1FD17 /* sandbox */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		C13D92811B14BB5200B1FD17 /* miniosa */ = {
+			isa = PBXGroup;
+			children = (
+				C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */,
+				C13D929C1B14D70E00B1FD17 /* atomic.h */,
+				C13D929D1B14D70E00B1FD17 /* coreaudio_io.h */,
+				C13D929E1B14D70E00B1FD17 /* coreaudio_io.m */,
+				C13D929F1B14D70E00B1FD17 /* coreaudio_util.h */,
+				C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */,
+				C13D92A11B14D70E00B1FD17 /* lock_free_fifo.c */,
+				C13D92A21B14D70E00B1FD17 /* lock_free_fifo.h */,
+				C13D92A31B14D70E00B1FD17 /* mem.c */,
+				C13D92A41B14D70E00B1FD17 /* mem.h */,
+				C13D92A51B14D70E00B1FD17 /* miniosa.h */,
+				C13D92A61B14D70E00B1FD17 /* miniosa.m */,
+			);
+			path = miniosa;
+			sourceTree = "<group>";
+		};
+		C13D92841B14BB5200B1FD17 /* sandbox */ = {
+			isa = PBXGroup;
+			children = (
+				C13D92851B14BB5200B1FD17 /* AppDelegate.swift */,
+				C13D92861B14BB5200B1FD17 /* Info.plist */,
+				C13D92981B14C80A00B1FD17 /* AudioEngine.h */,
+				C13D92991B14C80A00B1FD17 /* AudioEngine.m */,
+				C13D92871B14BB5200B1FD17 /* ViewController.swift */,
+				C13D92971B14C74B00B1FD17 /* ObjectiveCBridge.h */,
+			);
+			path = sandbox;
+			sourceTree = "<group>";
+		};
+		C13D928C1B14BB5B00B1FD17 /* res */ = {
+			isa = PBXGroup;
+			children = (
+				C13D928D1B14BB5B00B1FD17 /* Images.xcassets */,
+				C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */,
+			);
+			path = res;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C13D925A1B14BA4100B1FD17 /* miniosa */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C13D927A1B14BA4100B1FD17 /* Build configuration list for PBXNativeTarget "miniosa" */;
+			buildPhases = (
+				C13D92571B14BA4100B1FD17 /* Sources */,
+				C13D92581B14BA4100B1FD17 /* Frameworks */,
+				C13D92591B14BA4100B1FD17 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = miniosa;
+			productName = miniosa;
+			productReference = C13D925B1B14BA4100B1FD17 /* miniosa.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C13D92531B14BA4100B1FD17 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = Stuffmatic;
+				TargetAttributes = {
+					C13D925A1B14BA4100B1FD17 = {
+						CreatedOnToolsVersion = 6.3.1;
+					};
+				};
+			};
+			buildConfigurationList = C13D92561B14BA4100B1FD17 /* Build configuration list for PBXProject "miniosa" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C13D92521B14BA4100B1FD17;
+			productRefGroup = C13D925C1B14BA4100B1FD17 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C13D925A1B14BA4100B1FD17 /* miniosa */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C13D92591B14BA4100B1FD17 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */,
+				C13D928F1B14BB5B00B1FD17 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C13D92571B14BA4100B1FD17 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C13D928B1B14BB5200B1FD17 /* ViewController.swift in Sources */,
+				C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */,
+				C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */,
+				C13D92891B14BB5200B1FD17 /* AppDelegate.swift in Sources */,
+				C13D92AA1B14D70E00B1FD17 /* lock_free_fifo.c in Sources */,
+				C13D929A1B14C80A00B1FD17 /* AudioEngine.m in Sources */,
+				C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */,
+				C13D92A81B14D70E00B1FD17 /* coreaudio_io.m in Sources */,
+				C13D92A91B14D70E00B1FD17 /* coreaudio_util.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C13D92781B14BA4100B1FD17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C13D92791B14BA4100B1FD17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C13D927B1B14BA4100B1FD17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = src/sandbox/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = src/sandbox/ObjectiveCBridge.h;
+			};
+			name = Debug;
+		};
+		C13D927C1B14BA4100B1FD17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = src/sandbox/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = src/sandbox/ObjectiveCBridge.h;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C13D92561B14BA4100B1FD17 /* Build configuration list for PBXProject "miniosa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C13D92781B14BA4100B1FD17 /* Debug */,
+				C13D92791B14BA4100B1FD17 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C13D927A1B14BA4100B1FD17 /* Build configuration list for PBXNativeTarget "miniosa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C13D927B1B14BA4100B1FD17 /* Debug */,
+				C13D927C1B14BA4100B1FD17 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C13D92531B14BA4100B1FD17 /* Project object */;
+}
