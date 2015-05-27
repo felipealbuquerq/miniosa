@@ -165,10 +165,7 @@ mnError mnInstance_initialize(mnInstance* instance,
 {
     //create and configure instance
     mnOptions defaultOptions;
-    defaultOptions.sampleRate = 44100;
-    defaultOptions.numberOfInputChannels = 1;
-    defaultOptions.numberOfOutputChannels = 2;
-    defaultOptions.bufferSizeInFrames = 512;
+    mnOptions_setDefaults(&defaultOptions);
     
     mnOptions* optionsToUse = options != NULL ? options : &defaultOptions;
     

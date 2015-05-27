@@ -24,6 +24,8 @@ extern "C"
         int bufferSizeInFrames;
     } mnOptions;
     
+    void mnOptions_setDefaults(mnOptions* options);
+    
     typedef void (*mnAudioInputCallback)(int numChannels, int numFrames, const float* samples, void* callbackContext);
     
     typedef void (*mnAudioOutputCallback)(int numChannels, int numFrames, float* samples, void* callbackContext);

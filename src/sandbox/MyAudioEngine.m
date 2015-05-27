@@ -80,14 +80,13 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
     return sharedInstance;
 }
 
-
 -(id)init
 {
     self = [super initWithInputCallback:inputBufferCallback
                          outputCallback:outputBufferCallback
                         callbackContext:(void*)self
                                 options:NULL];
-
+    
     if (self) {
         self.toneFrequency = 440.0f;
         mnFIFO_init(&toAudioThreadFifo, kFIFOCapacity, sizeof(Event));

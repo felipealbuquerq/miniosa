@@ -14,9 +14,9 @@
 @private
     mnAudioInputCallback audioInputCallback;
     mnAudioOutputCallback audioOutputCallback;
-    BOOL useDefaultOptions;
     mnOptions options;
     void* callbackContext;
+    BOOL hasShownMicPermissionErrorDialog;
 }
 
 -(id)initWithInputCallback:(mnAudioInputCallback)inputCallback

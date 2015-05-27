@@ -4,6 +4,14 @@
 #include "mem.h"
 #include "instance.h"
 
+void mnOptions_setDefaults(mnOptions* options)
+{
+    options->sampleRate = 44100;
+    options->numberOfInputChannels = 1;
+    options->numberOfOutputChannels = 2;
+    options->bufferSizeInFrames = 512;
+}
+
 static mnInstance* s_instance = NULL;
 
 mnError mnStart(mnAudioInputCallback inputCallback,

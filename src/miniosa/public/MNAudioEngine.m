@@ -7,8 +7,17 @@
 //
 
 #import "MNAudioEngine.h"
+#import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
+#define kHasShownMicPermissionPromptSettingsKey @"kHasShownMicPermissionPromptSettingsKey"
 static int instanceCount = 0;
+
+@interface MNAudioEngine()
+
+@property UIAlertView* micPermissionErrorAlert;
+
+@end
 
 @implementation MNAudioEngine
 
@@ -30,14 +39,20 @@ static int instanceCount = 0;
         instanceCount++;
         if (optionsPtr) {
             memcpy(&options, optionsPtr, sizeof(mnOptions));
-            useDefaultOptions = NO;
         }
         else {
-            useDefaultOptions = YES;
+            mnOptions_setDefaults(&options);
         }
+        
         audioInputCallback = inputCallback;
         audioOutputCallback = outputCallback;
         callbackContext = context;
+        
+        self.micPermissionErrorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                                  message:@"You have not given permission to access the microphone. Go to the settings menu to fix this."
+                                                                 delegate:nil
+                                                        cancelButtonTitle:@"OK"
+                                                        otherButtonTitles:nil];
     }
     
     return self;
@@ -48,9 +63,61 @@ static int instanceCount = 0;
     instanceCount--;
 }
 
+-(void)showMicrophonePermissionErrorMessage
+{
+    if (!hasShownMicPermissionErrorDialog) {
+        hasShownMicPermissionErrorDialog = YES;
+        [self.micPermissionErrorAlert show];
+    }
+}
+
+-(void)startAudio
+{
+    mnStart(audioInputCallback, audioOutputCallback, callbackContext, &options);
+}
+
 -(void)start
 {
-    mnStart(audioInputCallback, audioOutputCallback, callbackContext, useDefaultOptions ? NULL : &options);
+    BOOL micNeeded = options.numberOfInputChannels > 0;
+    
+    if (micNeeded) {
+        AVAudioSession* audioSession = [AVAudioSession sharedInstance];
+        
+        if ([audioSession respondsToSelector:@selector(recordPermission)]) {
+            //iOS8 permission flow
+            
+            if (audioSession.recordPermission == AVAudioSessionRecordPermissionGranted) {
+                //we're good to go
+                [self startAudio];
+            }
+            else if (audioSession.recordPermission == AVAudioSessionRecordPermissionDenied) {
+                //the user has denied the app to use the mic. show an error message
+                [self showMicrophonePermissionErrorMessage];
+            }
+            else if (audioSession.recordPermission == AVAudioSessionRecordPermissionUndetermined) {
+                //the user has not yet made a decision. show prompt
+                [audioSession requestRecordPermission:^(BOOL granted) {
+                    [self startAudio];
+                }];
+            }
+        }
+        else {
+            //iOS7 permission flow
+            [audioSession requestRecordPermission:^(BOOL granted) {
+                if (!granted && [[NSUserDefaults standardUserDefaults] boolForKey:kHasShownMicPermissionPromptSettingsKey]) {
+                    [self showMicrophonePermissionErrorMessage];
+                }
+                
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kHasShownMicPermissionPromptSettingsKey];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                
+                [self startAudio];
+            }];
+        }
+    }
+    else {
+        [self startAudio];
+    }
 }
 
 -(void)stop

@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         
         MyAudioEngine.sharedInstance().start()
+        
         return true
     }
 
