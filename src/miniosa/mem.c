@@ -65,35 +65,38 @@ void* mnMalloc(size_t size, const char* tag)
 void mnFree(void* ptr)
 {
 #ifdef DEBUG
-    if (clearRecords)
-    {
-        memset(allocationRecords, 0,  MN_MAX_NUM_DEBUG_ALLOCATION_RECORDS * sizeof(mnAllocationRecord));
-        clearRecords = 0;
-    }
     
-    mnAllocationRecord* record = NULL;
-    for (int i = 0; i <  MN_MAX_NUM_DEBUG_ALLOCATION_RECORDS; i++)
+    if (ptr)
     {
-        if (allocationRecords[i].ptr == ptr)
+        if (clearRecords)
         {
-            record = &allocationRecords[i];
-            break;
+            memset(allocationRecords, 0,  MN_MAX_NUM_DEBUG_ALLOCATION_RECORDS * sizeof(mnAllocationRecord));
+            clearRecords = 0;
         }
+        
+        mnAllocationRecord* record = NULL;
+        for (int i = 0; i <  MN_MAX_NUM_DEBUG_ALLOCATION_RECORDS; i++)
+        {
+            if (allocationRecords[i].ptr == ptr)
+            {
+                record = &allocationRecords[i];
+                break;
+            }
+        }
+        
+        if (!record)
+        {
+            assert(0 && "attempting to  MN_FREE a pointer that was not allocated using  MN_MALLOC");
+            return;
+        }
+        
+        numLiveBytes -= record->size;
+        free(record->ptr);
+        
+        printf("freed pointer %p, %s, live bytes %ld\n", record->ptr, record->tag, numLiveBytes);
+        
+        memset(record, 0, sizeof(mnAllocationRecord));
     }
-    
-    if (!record)
-    {
-        assert(0 && "attempting to  MN_FREE a pointer that was not allocated using  MN_MALLOC");
-        return;
-    }
-    
-    numLiveBytes -= record->size;
-    free(record->ptr);
-    
-    printf("freed pointer %p, %s, live bytes %ld\n", record->ptr, record->tag, numLiveBytes);
-    
-    memset(record, 0, sizeof(mnAllocationRecord));
-    
     
 #else
     free(ptr);

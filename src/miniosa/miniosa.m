@@ -28,6 +28,7 @@ mnError mnStop()
     
     mnInstance_deinitialize(s_instance);
     MN_FREE(s_instance);
+    s_instance = NULL;
     
     return MN_NO_ERROR;
 }

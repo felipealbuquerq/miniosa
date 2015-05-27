@@ -154,6 +154,79 @@ static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
     return noErr;
 }
 
+#pragma mark mnInstance API
+mnError mnInstance_initialize(mnInstance* instance,
+                              mnAudioInputCallback inputCallback,
+                              mnAudioOutputCallback outputCallback,
+                              void* callbackContext,
+                              mnOptions* options)
+{
+    //create and configure instance
+    mnOptions defaultOptions;
+    defaultOptions.sampleRate = 44100;
+    defaultOptions.numberOfInputChannels = 1;
+    defaultOptions.numberOfOutputChannels = 2;
+    defaultOptions.bufferSizeInFrames = 512;
+    
+    mnOptions* optionsToUse = options != NULL ? options : &defaultOptions;
+    
+    memset(instance, 0, sizeof(mnInstance));
+    
+    instance->requestedNumInputChannels = optionsToUse->numberOfInputChannels;
+    instance->requestedNumOutputChannels = optionsToUse->numberOfOutputChannels;
+    instance->requestedSampleRate = optionsToUse->sampleRate;
+    instance->requestedBufferSizeInFrames = optionsToUse->bufferSizeInFrames;
+    
+    instance->audioInputCallback = inputCallback;
+    instance->audioOutputCallback = outputCallback;
+    instance->callbackContext = callbackContext;
+    
+    //initialize audio session, passing the instance as callback data
+    mnInitAudioSession(instance);
+    
+    //start audio
+    mnInstance_resume(instance);
+    
+    return MN_NO_ERROR;
+}
+
+mnError mnInstance_deinitialize(mnInstance* instance)
+{
+    mnInstance_stopAndDestroyRemoteIOInstance(instance);
+    
+    AudioComponentInstanceDispose(instance->auComponentInstance);
+    
+    MN_FREE(instance->inputScratchBuffer);
+    MN_FREE(instance->outputScratchBuffer);
+
+    return MN_NO_ERROR;
+}
+
+mnError mnInstance_suspend(mnInstance* instance)
+{
+    mnInstance_stopAndDestroyRemoteIOInstance(instance);
+    NSError* error = nil;
+    [[AVAudioSession sharedInstance] setActive:NO error:&error];
+    if (error) {
+        return MN_FAILED_TO_DEACTIVATE_SESSION;
+    }
+    
+    return MN_NO_ERROR;
+}
+
+mnError mnInstance_resume(mnInstance* instance)
+{
+    NSError* error = nil;
+    [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (error) {
+        return MN_FAILED_TO_ACTIVATE_SESSION;
+    }
+    
+    mnInstance_createAndStartRemoteIOInstance(instance);
+    
+    return MN_NO_ERROR;
+}
+
 static void mnInstance_createRemoteIOInstance(mnInstance* instance)
 {
     /*create audio component description*/
@@ -341,82 +414,3 @@ void mnInstance_stopAndDestroyRemoteIOInstance(mnInstance* instance)
     MN_FREE(instance->outputScratchBuffer);
     instance->outputScratchBuffer = NULL;
 }
-
-#pragma mark mnInstance API
-mnError mnInstance_initialize(mnInstance* instance,
-                              mnAudioInputCallback inputCallback,
-                              mnAudioOutputCallback outputCallback,
-                              void* callbackContext,
-                              mnOptions* options)
-{
-    //create and configure instance
-    mnOptions defaultOptions;
-    defaultOptions.sampleRate = 44100;
-    defaultOptions.numberOfInputChannels = 1;
-    defaultOptions.numberOfOutputChannels = 2;
-    defaultOptions.bufferSizeInFrames = 512;
-    
-    mnOptions* optionsToUse = options != NULL ? options : &defaultOptions;
-    
-    memset(instance, 0, sizeof(mnInstance));
-    
-    instance->requestedNumInputChannels = optionsToUse->numberOfInputChannels;
-    instance->requestedNumOutputChannels = optionsToUse->numberOfOutputChannels;
-    instance->requestedSampleRate = optionsToUse->sampleRate;
-    instance->requestedBufferSizeInFrames = optionsToUse->bufferSizeInFrames;
-    
-    instance->audioInputCallback = inputCallback;
-    instance->audioOutputCallback = outputCallback;
-    instance->callbackContext = callbackContext;
-    
-    //initialize audio session, passing the instance as callback data
-    mnInitAudioSession(instance);
-    
-    //start audio
-    mnInstance_resume(instance);
-    
-    return MN_NO_ERROR;
-}
-
-mnError mnInstance_deinitialize(mnInstance* instance)
-{
-    mnInstance_stopAndDestroyRemoteIOInstance(instance);
-    
-    AudioComponentInstanceDispose(instance->auComponentInstance);
-    
-    MN_FREE(instance->inputScratchBuffer);
-    MN_FREE(instance->outputScratchBuffer);
-    
-    MN_FREE(instance);
-
-    return MN_NO_ERROR;
-}
-
-mnError mnInstance_suspend(mnInstance* instance)
-{
-    mnInstance_stopAndDestroyRemoteIOInstance(instance);
-    NSError* error = nil;
-    [[AVAudioSession sharedInstance] setActive:NO error:&error];
-    if (error) {
-        return MN_FAILED_TO_DEACTIVATE_SESSION;
-    }
-    
-    return MN_NO_ERROR;
-}
-
-mnError mnInstance_resume(mnInstance* instance)
-{
-    NSError* error = nil;
-    [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    if (error) {
-        return MN_FAILED_TO_ACTIVATE_SESSION;
-    }
-    
-    mnInstance_createAndStartRemoteIOInstance(instance);
-    
-    return MN_NO_ERROR;
-}
-
-
-
-

@@ -31,7 +31,6 @@ void inputBufferCallback(int numChannels, int numFrames, const float* samples, v
     Event e;
     e.value = peak;
     mnFIFO_push(&audioEngine->fromAudioThreadFifo, &e);
-    
 }
 
 void outputBufferCallback(int numChannels, int numFrames, float* samples, void* callbackContext)
