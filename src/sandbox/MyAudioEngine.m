@@ -6,8 +6,7 @@
 //  Copyright (c) 2015 Stuffmatic. All rights reserved.
 //
 
-#import "AudioEngine.h"
-#import "miniosa.h"
+#import "MyAudioEngine.h"
 
 #define kSampleRate 44100
 #define kFIFOCapacity 100
@@ -16,9 +15,9 @@ typedef struct {
     float value;
 } Event;
 
-void audioInputCallback(int numChannels, int numFrames, const float* samples, void* callbackContext)
+void inputBufferCallback(int numChannels, int numFrames, const float* samples, void* callbackContext)
 {
-    AudioEngine* audioEngine = (__bridge AudioEngine*)callbackContext;
+    MyAudioEngine* audioEngine = (__bridge MyAudioEngine*)callbackContext;
     
     float peak = 0;
     for (int i = 0; i < numFrames; i++) {
@@ -35,9 +34,9 @@ void audioInputCallback(int numChannels, int numFrames, const float* samples, vo
     
 }
 
-void audioOutputCallback(int numChannels, int numFrames, float* samples, void* callbackContext)
+void outputBufferCallback(int numChannels, int numFrames, float* samples, void* callbackContext)
 {
-    AudioEngine* audioEngine = (__bridge AudioEngine*)callbackContext;
+    MyAudioEngine* audioEngine = (__bridge MyAudioEngine*)callbackContext;
     
     static float frequency = 0.0f;
     
@@ -67,27 +66,32 @@ void audioOutputCallback(int numChannels, int numFrames, float* samples, void* c
     phase = fmodf(phase, 2.0f * M_PI);
 }
 
-@implementation AudioEngine
 
+@implementation MyAudioEngine
 
-+(AudioEngine*)sharedInstance
++(MyAudioEngine*)sharedInstance
 {
-    static AudioEngine *sharedManager = nil;
+    static MyAudioEngine *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] init];
+        sharedInstance = [[self alloc] init];
     });
-    return sharedManager;
+    return sharedInstance;
 }
+
 
 -(id)init
 {
-    self = [super init];
-    
+    self = [super initWithInputCallback:inputBufferCallback
+                         outputCallback:outputBufferCallback
+                        callbackContext:(void*)self
+                                options:NULL];
+
     if (self) {
         self.toneFrequency = 440.0f;
         mnFIFO_init(&toAudioThreadFifo, kFIFOCapacity, sizeof(Event));
         mnFIFO_init(&fromAudioThreadFifo, kFIFOCapacity, sizeof(Event));
+
     }
     
     return self;
@@ -107,30 +111,6 @@ void audioOutputCallback(int numChannels, int numFrames, float* samples, void* c
     mnFIFO_push(&toAudioThreadFifo, &event);
     
     printf("peak level is %f\n", self.peakLevel);
-}
-
--(void)start
-{
-    mnOptions options;
-    options.sampleRate = kSampleRate;
-    options.numberOfInputChannels = 1;
-    options.numberOfOutputChannels = 2;
-    mnStart(audioInputCallback, audioOutputCallback, (__bridge void*)self, &options);
-}
-
--(void)stop
-{
-    mnStop();
-}
-
--(void)suspend
-{
-    mnSuspend();
-}
-
--(void)resume
-{
-    mnResume();
 }
 
 

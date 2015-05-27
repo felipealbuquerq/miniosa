@@ -5,6 +5,7 @@
 #include "coreaudio_io.h"
 #include "miniosa.h"
 #include "mem.h"
+#include "instance.h"
 
 #include <AudioToolbox/AudioToolbox.h>
 #include <AVFoundation/AVFoundation.h>
@@ -14,6 +15,8 @@
 static mnInstance* s_instance = NULL;
 
 #define MN_IOS_TEMP_BUFFER_SIZE_IN_FRAMES 2048
+
+#pragma mark Buffer conversion helpers
 
 /**
  * Converts a buffer of floats to a buffer of signed shorts. The floats are assumed
@@ -55,118 +58,29 @@ static inline void mnInt16ToFloat(short* sourceBuffer, float* targetBuffer, int 
     }
 }
 
-mnError mnInitialize(mnAudioInputCallback inputCallback,
-                     mnAudioOutputCallback outputCallback,
-                     void* callbackContext,
-                     mnOptions* options)
-{
-    if (s_instance != NULL)
-    {
-        return MN_ALREADY_INITIALIZED;
-    }
-    
-    //setup instance
-    s_instance = MN_MALLOC(sizeof(mnInstance), "mnInstance");
-    memset(s_instance, 0, sizeof(mnInstance));
-    
-    s_instance->requestedNumInputChannels = options->numberOfInputChannels;
-    s_instance->requestedNumOutputChannels = options->numberOfOutputChannels;
-    s_instance->requestedSampleRate = options->sampleRate;
-    s_instance->requestedBufferSizeInFrames = 512;
-    
-    s_instance->audioInputCallback = inputCallback;
-    s_instance->audioOutputCallback = outputCallback;
-    s_instance->callbackContext = callbackContext;
-    
-    /**
-     * Create the remote IO instance once.
-     */
-    //mnCreateRemoteIOInstance();
-    
-    /*
-     * Initialize the audio session
-     */
-    mnInitAudioSession();
-    
-    /*
-     * Activates audio session and starts RemoteIO unit if successful.
-     */
-    mnResumeAudio();
-    
-    return MN_NO_ERROR;
-}
+#pragma mark Audio buffer callbacks
 
-mnError mnDeinitialize()
-{
-    if (s_instance == NULL)
-    {
-        return MN_NOT_INITIALIZED;
-    }
-    
-    mnStopAndDeinitRemoteIO();
-    
-    AudioComponentInstanceDispose(s_instance->auComponentInstance);
-    
-    MN_FREE(s_instance->inputScratchBuffer);
-    MN_FREE(s_instance->outputScratchBuffer);
-    
-    MN_FREE(s_instance);
-
-    s_instance = NULL;
-    
-    return MN_NO_ERROR;
-}
-
-void mnAudioSessionInterruptionCallback(void *inClientData,  UInt32 inInterruptionState)
-{
-    if (inInterruptionState == kAudioSessionBeginInterruption)
-    {
-        //printf("* audio session interruption callback: begin interruption\n");
-        mnSuspendAudio();
-    }
-    else if (inInterruptionState == kAudioSessionEndInterruption)
-    {
-        //printf("* audio session interruption callback: end interruption\n");
-        mnResumeAudio();
-    }
-    else 
-    {
-        assert(0 && "unknown interruption state");
-    }
-    //mnDebugPrintAudioSessionInfo();
-}
-
-
-void mnInputAvailableChangeCallback(void *inUserData,
-                              AudioSessionPropertyID inPropertyID,
-                              UInt32 inPropertyValueSize,
-                              const void *inPropertyValue)
-{
-    //printf("* input availability changed. availability=%d\n", (*(int*)inPropertyValue));
-    //mnDebugPrintAudioSessionInfo();
-}
-
-OSStatus mnCoreAudioInputCallback(void *inRefCon,
-                                AudioUnitRenderActionFlags *ioActionFlags,
-                                const AudioTimeStamp *inTimeStamp,
-                                UInt32 inBusNumber,
-                                UInt32 inNumberFrames,
-                                AudioBufferList *ioData)
+static OSStatus mnCoreAudioInputCallback(void *inRefCon,
+                                         AudioUnitRenderActionFlags *ioActionFlags,
+                                         const AudioTimeStamp *inTimeStamp,
+                                         UInt32 inBusNumber,
+                                         UInt32 inNumberFrames,
+                                         AudioBufferList *ioData)
 {
     s_instance->inputBufferList.mBuffers[0].mDataByteSize = s_instance->inputBufferByteSize;
     //fill the already allocated input buffer list with samples
-    OSStatus status;    
+    OSStatus status;
     status = AudioUnitRender(s_instance->auComponentInstance,
-                             ioActionFlags, 
-                             inTimeStamp, 
-                             inBusNumber, 
-                             inNumberFrames, 
+                             ioActionFlags,
+                             inTimeStamp,
+                             inBusNumber,
+                             inNumberFrames,
                              &s_instance->inputBufferList);
     assert(status == 0);
     
-
+    
     mnInstance* instance = (mnInstance*)inRefCon;
-
+    
     const int numChannels = s_instance->inputBufferList.mBuffers[0].mNumberChannels;
     short* buffer = (short*) s_instance->inputBufferList.mBuffers[0].mData;
     int currFrame = 0;
@@ -179,10 +93,10 @@ OSStatus mnCoreAudioInputCallback(void *inRefCon,
         }
         
         /*Convert input buffer samples to floats*/
-        mnInt16ToFloat(&buffer[currFrame * numChannels], 
-                        s_instance->inputScratchBuffer,
-                        numFramesToMix * numChannels);
-            
+        mnInt16ToFloat(&buffer[currFrame * numChannels],
+                       s_instance->inputScratchBuffer,
+                       numFramesToMix * numChannels);
+        
         /*Pass the converted buffer to the instance*/
         if (instance->audioInputCallback)
         {
@@ -195,14 +109,14 @@ OSStatus mnCoreAudioInputCallback(void *inRefCon,
     return noErr;
 }
 
-OSStatus mnCoreAudioOutputCallback(void *inRefCon,
-                                   AudioUnitRenderActionFlags *ioActionFlags,
-                                   const AudioTimeStamp *inTimeStamp,
-                                   UInt32 inBusNumber,
-                                   UInt32 inNumberFrames,
-                                   AudioBufferList *ioData)
-{   
-//#define KWL_DEBUG_CA_DEADLINE
+static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
+                                          AudioUnitRenderActionFlags *ioActionFlags,
+                                          const AudioTimeStamp *inTimeStamp,
+                                          UInt32 inBusNumber,
+                                          UInt32 inNumberFrames,
+                                          AudioBufferList *ioData)
+{
+    //#define KWL_DEBUG_CA_DEADLINE
 #ifdef KWL_DEBUG_CA_DEADLINE
     static double prevDelta = 0.0;
     static double ht = 0.0;
@@ -229,13 +143,13 @@ OSStatus mnCoreAudioOutputCallback(void *inRefCon,
         {
             numFramesToMix = MN_IOS_TEMP_BUFFER_SIZE_IN_FRAMES;
         }
-    
+        
         /*prepare a new buffer*/
         if (instance->audioOutputCallback)
         {
             instance->audioOutputCallback(numChannels, numFramesToMix, instance->outputScratchBuffer, instance->callbackContext);
         }
-
+        
         mnFloatToInt16(s_instance->outputScratchBuffer,
                        &buffer[currFrame * numChannels],
                        numFramesToMix * numChannels);
@@ -243,6 +157,67 @@ OSStatus mnCoreAudioOutputCallback(void *inRefCon,
     }
     
     return noErr;
+}
+
+mnError mnInitialize(mnAudioInputCallback inputCallback,
+                     mnAudioOutputCallback outputCallback,
+                     void* callbackContext,
+                     mnOptions* options)
+{
+    if (s_instance != NULL)
+    {
+        return MN_ALREADY_INITIALIZED;
+    }
+    
+    //create and configure instance
+    mnOptions defaultOptions;
+    defaultOptions.sampleRate = 44100;
+    defaultOptions.numberOfInputChannels = 1;
+    defaultOptions.numberOfOutputChannels = 2;
+    defaultOptions.bufferSizeInFrames = 512;
+    
+    mnOptions* optionsToUse = options != NULL ? options : &defaultOptions;
+    
+    s_instance = MN_MALLOC(sizeof(mnInstance), "mnInstance");
+    memset(s_instance, 0, sizeof(mnInstance));
+    
+    s_instance->requestedNumInputChannels = optionsToUse->numberOfInputChannels;
+    s_instance->requestedNumOutputChannels = optionsToUse->numberOfOutputChannels;
+    s_instance->requestedSampleRate = optionsToUse->sampleRate;
+    s_instance->requestedBufferSizeInFrames = optionsToUse->bufferSizeInFrames;
+    
+    s_instance->audioInputCallback = inputCallback;
+    s_instance->audioOutputCallback = outputCallback;
+    s_instance->callbackContext = callbackContext;
+    
+    //initialize audio session
+    mnInitAudioSession();
+    
+    //start audio
+    mnResumeAudio();
+    
+    return MN_NO_ERROR;
+}
+
+mnError mnDeinitialize()
+{
+    if (s_instance == NULL)
+    {
+        return MN_NOT_INITIALIZED;
+    }
+    
+    mnStopAndDeinitRemoteIO();
+    
+    AudioComponentInstanceDispose(s_instance->auComponentInstance);
+    
+    MN_FREE(s_instance->inputScratchBuffer);
+    MN_FREE(s_instance->outputScratchBuffer);
+    
+    MN_FREE(s_instance);
+
+    s_instance = NULL;
+    
+    return MN_NO_ERROR;
 }
 
 void mnStopAndDeinitRemoteIO()
@@ -435,188 +410,7 @@ void mnInitAndStartRemoteIO()
 
 }
 
-void mnAudioRouteChangeCallback(void *inUserData,
-                              AudioSessionPropertyID inPropertyID,
-                              UInt32 inPropertyValueSize,
-                              const void *inPropertyValue)
-{
-    //printf("* audio route changed,\n");
-    mnInstance* instance = (mnInstance*)inUserData;
-    
-    //get the old audio route name and the reason for the change
-    CFDictionaryRef dict = inPropertyValue;
-    CFStringRef oldRoute = 
-        CFDictionaryGetValue(dict, CFSTR(kAudioSession_AudioRouteChangeKey_OldRoute));
-    CFNumberRef reason = 
-    CFDictionaryGetValue(dict, CFSTR(kAudioSession_AudioRouteChangeKey_Reason));
-    int reasonNumber = -1;
-    CFNumberGetValue(reason, CFNumberGetType(reason), &reasonNumber);
-    
-    //reason specific code
-    switch (reasonNumber)
-    {
-        case kAudioSessionRouteChangeReason_Unknown: //0
-        {
-            //printf("kAudioSessionRouteChangeReason_Unknown\n");
-            break;
-        }   
-        case kAudioSessionRouteChangeReason_NewDeviceAvailable: //1
-        {
-            //printf("kAudioSessionRouteChangeReason_NewDeviceAvailable\n");
-            break;
-        }
-        case kAudioSessionRouteChangeReason_OldDeviceUnavailable: //2
-        {
-            //printf("kAudioSessionRouteChangeReason_OldDeviceUnavailable\n");
-            break;
-        }
-        case kAudioSessionRouteChangeReason_CategoryChange: //3
-        {
-            //printf("kAudioSessionRouteChangeReason_CategoryChange\n");
-            break;
-        }   
-        case kAudioSessionRouteChangeReason_Override: //4
-        {
-            //printf("kAudioSessionRouteChangeReason_Override\n");
-            break;
-        }
-            // this enum has no constant with a value of 5
-        case kAudioSessionRouteChangeReason_WakeFromSleep: //6
-        {
-            //printf("kAudioSessionRouteChangeReason_WakeFromSleep\n");
-            break;
-        }
-        case kAudioSessionRouteChangeReason_NoSuitableRouteForCategory:
-        {
-            //printf("kAudioSessionRouteChangeReason_NoSuitableRouteForCategory\n");
-            break;
-        }
-    }
-    
-    /* 
-     From the Apple "Handling Audio Hardware Route Changes" docs:
-     
-     "One of the audio hardware route change reasons in iOS is 
-     kAudioSessionRouteChangeReason_CategoryChange. In other words, 
-     a change in audio session category is considered by the system—in 
-     this context—to be a route change, and will invoke a route change 
-     property listener callback. As a consequence, such a callback—if 
-     it is intended to respond only to headset plugging and unplugging—should 
-     explicitly ignore this type of route change."
-     
-     If kAudioSessionRouteChangeReason_CategoryChange is not ignored, we could get 
-     an infinite loop because the audio session category is set below, which will in
-     turn trigger kAudioSessionRouteChangeReason_CategoryChange and so on.
-     */
-    if (reasonNumber != kAudioSessionRouteChangeReason_CategoryChange)
-    {
-        /*
-         * Deinit the remote io and set it up again depending on if input is available. 
-         */
-        UInt32 isAudioInputAvailable; 
-        UInt32 size = sizeof(isAudioInputAvailable);
-        OSStatus result = AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, 
-                                                  &size, 
-                                                  &isAudioInputAvailable);
-        mnEnsureNoAudioSessionError(result);
-        
-        mnStopAndDeinitRemoteIO();
-        
-        int numInChannels = isAudioInputAvailable != 0 ? s_instance->requestedNumInputChannels : 0;
-        UInt32 sessionCategory = numInChannels == 0 ? kAudioSessionCategory_MediaPlayback : 
-                                                      kAudioSessionCategory_PlayAndRecord;
-        result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-        mnEnsureNoAudioSessionError(result);
-        
-        if (numInChannels > 0)
-        {
-            int val = 1;
-            result = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryDefaultToSpeaker, 
-                                             sizeof(val), 
-                                             &val);
-            mnEnsureNoAudioSessionError(result);
-        }
 
-        result = AudioSessionSetActive(true);
-        mnEnsureNoAudioSessionError(result); //-12986 seems to mean that kAudioSessionCategory_PlayAndRecord was set and no input is available 
-        
-        mnInitAndStartRemoteIO();
-    }
-}
-
-void mnServerDiedCallback(void *inUserData,
-                        AudioSessionPropertyID inPropertyID,
-                        UInt32 inPropertyValueSize,
-                        const void *inPropertyValue)
-{
-    //printf("server died\n");
-}
-
-void mnInitAudioSession()
-{
-    OSStatus status = 0;
-    
-    /*
-     * Initialize and activte audio session
-     */
-    status = AudioSessionInitialize(NULL, NULL, &mnAudioSessionInterruptionCallback, s_instance);
-    if (status == kAudioSessionAlreadyInitialized)
-    {
-        //already initialized
-    }
-    else
-    {
-        mnEnsureNoAudioSessionError(status);
-        assert(status == noErr);
-    }
-    
-    /*
-     UInt32 isOtherAudioPlaying = 0;
-     UInt32 propertySize = sizeof(isOtherAudioPlaying);
-     status = AudioSessionGetProperty(kAudioSessionProperty_OtherAudioIsPlaying, &propertySize, &isOtherAudioPlaying);
-     assert(status == noErr);
-     //printf("other audio playing = %d\n", isOtherAudioPlaying);
-     */
-    
-    //check if audio input is available at all
-    
-    UInt32 inputAvailable; 
-    int propertySize = sizeof(inputAvailable);
-    status = AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, &propertySize, &inputAvailable);
-    assert(status == noErr);
-    
-    if (inputAvailable == 0)
-    {
-        //This device does not support audio input at this point 
-        //(this may change at any time, for example when connecting
-        //a headset to an iPod touch).
-    }
-    
-    UInt32 sessionCategory = inputAvailable == 0 ? kAudioSessionCategory_MediaPlayback : 
-                                                   kAudioSessionCategory_PlayAndRecord;
-    status = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-    mnEnsureNoAudioSessionError(status);
-    
-    int val = 1;
-    status = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryDefaultToSpeaker, 
-                                     sizeof(val), 
-                                     &val);
-    
-    status = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioInputAvailable, 
-                                             &mnInputAvailableChangeCallback,
-                                             s_instance);
-    mnEnsureNoAudioSessionError(status);
-    
-    status = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, 
-                                             mnAudioRouteChangeCallback, 
-                                             s_instance);
-    mnEnsureNoAudioSessionError(status);
-    
-    status = AudioSessionAddPropertyListener(kAudioSessionProperty_ServerDied, 
-                                             mnServerDiedCallback, 
-                                             s_instance);
-    mnEnsureNoAudioSessionError(status);
-}
 
 void mnSuspendAudio(void)
 {
@@ -637,19 +431,7 @@ int mnResumeAudio(void)
     return 0;
 }
 
-void mnSetASBD(AudioStreamBasicDescription* asbd, int numChannels, float sampleRate)
-{
-    memset(asbd, 0, sizeof(AudioStreamBasicDescription));
-    assert(numChannels == 1 || numChannels == 2);
-    asbd->mBitsPerChannel = 16;
-    asbd->mBytesPerFrame = 2 * numChannels;
-    asbd->mBytesPerPacket = asbd->mBytesPerFrame;
-    asbd->mChannelsPerFrame = numChannels;
-    asbd->mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-    asbd->mFormatID = kAudioFormatLinearPCM;
-    asbd->mFramesPerPacket = 1;
-    asbd->mSampleRate = sampleRate;
-}
+
 
 
 

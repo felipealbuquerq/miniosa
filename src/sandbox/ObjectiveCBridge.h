@@ -9,6 +9,6 @@
 #ifndef miniosa_ObjectiveCBridge_h
 #define miniosa_ObjectiveCBridge_h
 
-#import "AudioEngine.h"
+#import "MyAudioEngine.h"
 
 #endif

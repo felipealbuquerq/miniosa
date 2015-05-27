@@ -4,7 +4,6 @@
 #ifndef MN_MINIOSA_H
 #define MN_MINIOSA_H
 
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -18,8 +17,9 @@ extern "C"
     
     typedef struct {
         float sampleRate;
-        float numberOfInputChannels;
-        float numberOfOutputChannels;
+        int numberOfInputChannels;
+        int numberOfOutputChannels;
+        int bufferSizeInFrames;
     } mnOptions;
     
     typedef void (*mnAudioInputCallback)(int numChannels, int numFrames, const float* samples, void* callbackContext);

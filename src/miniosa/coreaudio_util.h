@@ -4,7 +4,7 @@
 #ifndef MN_COREAUDIO_UTIL_H
 #define MN_COREAUDIO_UTIL_H
 
-#include <Foundation/Foundation.h>
+#include <AudioToolbox/AudioToolbox.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -34,6 +34,15 @@ extern "C"
      * Prints some info about the remote I/O unit to the console.
      */
     void mnDebugPrintRemoteIOInfo();
+    
+    /**
+     * Helper function that initializes an AudioStreamBasicDescription corresponding
+     * to linear PCM with a given number of channels and a given sample rate
+     * @param asbd The AudioStreamBasicDescription to initialize.
+     * @param numChannels The number of channels.
+     * @param sampleRate The sample rate.
+     */
+    void mnSetASBD(AudioStreamBasicDescription* asbd, int numChannels, float sampleRate);
     
 #ifdef __cplusplus
 }

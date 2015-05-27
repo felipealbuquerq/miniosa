@@ -1,34 +1,26 @@
 //
-//  AudioEngine.h
+//  MyAudioEngine.h
 //  miniosa
 //
 //  Created by perarne on 5/26/15.
 //  Copyright (c) 2015 Stuffmatic. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+
+#import "MNAudioEngine.h"
 #import "fifo.h"
 
-@interface AudioEngine : NSObject
+@interface MyAudioEngine : MNAudioEngine
 {
 @public
     mnFIFO toAudioThreadFifo;
     mnFIFO fromAudioThreadFifo;
 }
 
++(MyAudioEngine*)sharedInstance;
+
 @property (readonly) float peakLevel;
-
 @property float toneFrequency;
-
-+(AudioEngine*)sharedInstance;
-
--(void)start;
-
--(void)stop;
-
--(void)suspend;
-
--(void)resume;
 
 -(void)update;
 

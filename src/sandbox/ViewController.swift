@@ -89,29 +89,29 @@ class ViewController: UIViewController {
     
     //MARK: Display link
     func displayLinkCallback() {
-        AudioEngine.sharedInstance().update()
+        MyAudioEngine.sharedInstance().update()
     }
     
     //MARK: UI control actions
     
     func startPressed(button:UIButton) {
-        AudioEngine.sharedInstance().start()
+        MyAudioEngine.sharedInstance().start()
     }
     
     func stopPressed(button:UIButton) {
-        AudioEngine.sharedInstance().stop()
+        MyAudioEngine.sharedInstance().stop()
     }
     
     func suspendPressed(button:UIButton) {
-        AudioEngine.sharedInstance().suspend()
+        MyAudioEngine.sharedInstance().suspend()
     }
     
     func resumePressed(button:UIButton) {
-        AudioEngine.sharedInstance().resume()
+        MyAudioEngine.sharedInstance().resume()
     }
     
     func frequencySliderChanged(slider:UISlider) {
-        AudioEngine.sharedInstance().toneFrequency = 300 + 700 * slider.value
+        MyAudioEngine.sharedInstance().toneFrequency = 300 + 700 * slider.value
     }
 }
 

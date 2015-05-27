@@ -1,7 +1,6 @@
 
 #include <assert.h>
 #include <AudioUnit/AudioUnit.h>
-#include <AudioToolbox/AudioToolbox.h>
 
 #include "coreaudio_util.h"
 
@@ -173,5 +172,18 @@ void mnDebugPrintRemoteIOInfo(AudioUnit audioUnit)
     printf("        Output format ID %d\n", outFmt.mFormatID);
     printf("        Output frames per packet %d\n", outFmt.mFramesPerPacket);
     printf("        Output sample rate %f\n", outFmt.mSampleRate);
-    
+}
+
+void mnSetASBD(AudioStreamBasicDescription* asbd, int numChannels, float sampleRate)
+{
+    memset(asbd, 0, sizeof(AudioStreamBasicDescription));
+    assert(numChannels == 1 || numChannels == 2);
+    asbd->mBitsPerChannel = 16;
+    asbd->mBytesPerFrame = 2 * numChannels;
+    asbd->mBytesPerPacket = asbd->mBytesPerFrame;
+    asbd->mChannelsPerFrame = numChannels;
+    asbd->mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    asbd->mFormatID = kAudioFormatLinearPCM;
+    asbd->mFramesPerPacket = 1;
+    asbd->mSampleRate = sampleRate;
 }
