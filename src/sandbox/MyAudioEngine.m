@@ -66,7 +66,6 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
     phase = fmodf(phase, 2.0f * M_PI);
 }
 
-
 @implementation MyAudioEngine
 
 +(MyAudioEngine*)sharedInstance

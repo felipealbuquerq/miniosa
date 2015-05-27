@@ -1,11 +1,14 @@
-#ifndef  MN_INSTANCE_H
-#define  MN_INSTANCE_H
 
-/*! \file */ 
+/*! \file */
 
-#include "miniosa.h"
+#ifndef MN_INSTANCE_H
+#define MN_INSTANCE_H
+
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AudioToolbox.h>
+#include <CoreAudio/CoreAudioTypes.h>
+
+#include "miniosa.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -39,10 +42,26 @@ extern "C"
         mnAudioOutputCallback audioOutputCallback;
         void* callbackContext;
     } mnInstance;
-
+        
+    mnError mnInstance_initialize(mnInstance* instance,
+                                  mnAudioInputCallback inputCallback,
+                                  mnAudioOutputCallback outputCallback,
+                                  void* callbackContext,
+                                  mnOptions* options);
     
+    mnError mnInstance_deinitialize(mnInstance* instance);
+    
+    mnError mnInstance_suspend(mnInstance* instance);
+    
+    mnError mnInstance_resume(mnInstance* instance);
+    
+    void mnInstance_createAndStartRemoteIOInstance(mnInstance* instance);
+    
+    void mnInstance_stopAndDestroyRemoteIOInstance(mnInstance* instance);
+
 #ifdef __cplusplus
-} //extern "C"
+}
 #endif /* __cplusplus */
 
-#endif // MN_INSTANCE_H
+
+#endif //MN_INSTANCE_H

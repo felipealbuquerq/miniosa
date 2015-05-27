@@ -10,7 +10,7 @@
 
 #define kSampleRate 44100
 
-static int s_instanceCount = 0;
+static int instanceCount = 0;
 
 @implementation MNAudioEngine
 
@@ -21,12 +21,12 @@ static int s_instanceCount = 0;
 {
     self = [super init];
     
-    if (s_instanceCount > 0) {
+    if (instanceCount > 0) {
         return nil;
     }
     
     if (self) {
-        s_instanceCount++;
+        instanceCount++;
         options = optionsPtr;
         audioInputCallback = inputCallback;
         audioOutputCallback = outputCallback;

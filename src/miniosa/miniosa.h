@@ -12,7 +12,9 @@ extern "C"
     typedef enum {
         MN_NO_ERROR = 0,
         MN_ALREADY_INITIALIZED = 1,
-        MN_NOT_INITIALIZED = 2
+        MN_NOT_INITIALIZED = 2,
+        MN_FAILED_TO_ACTIVATE_SESSION = 3,
+        MN_FAILED_TO_DEACTIVATE_SESSION = 4
     } mnError;
     
     typedef struct {

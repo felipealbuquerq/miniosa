@@ -1,22 +1,27 @@
 
 #include <assert.h>
 
+#include <AVFoundation/AVFoundation.h>
+
 #include "audiosession.h"
 #include "instance.h"
+#include "coreaudio_util.h"
 
 #pragma mark Audio session callbacks
 
 void mnAudioSessionInterruptionCallback(void *inClientData,  UInt32 inInterruptionState)
 {
+    mnInstance* instance = (mnInstance*)inClientData;
+    
     if (inInterruptionState == kAudioSessionBeginInterruption)
     {
         //printf("* audio session interruption callback: begin interruption\n");
-        mnSuspendAudio();
+        mnInstance_suspend(instance);
     }
     else if (inInterruptionState == kAudioSessionEndInterruption)
     {
         //printf("* audio session interruption callback: end interruption\n");
-        mnResumeAudio();
+        mnInstance_resume(instance);
     }
     else
     {
@@ -45,10 +50,8 @@ void mnAudioRouteChangeCallback(void *inUserData,
     
     //get the old audio route name and the reason for the change
     CFDictionaryRef dict = inPropertyValue;
-    CFStringRef oldRoute =
-    CFDictionaryGetValue(dict, CFSTR(kAudioSession_AudioRouteChangeKey_OldRoute));
-    CFNumberRef reason =
-    CFDictionaryGetValue(dict, CFSTR(kAudioSession_AudioRouteChangeKey_Reason));
+    //CFStringRef oldRoute = CFDictionaryGetValue(dict, CFSTR(kAudioSession_AudioRouteChangeKey_OldRoute));
+    CFNumberRef reason = CFDictionaryGetValue(dict, CFSTR(kAudioSession_AudioRouteChangeKey_Reason));
     int reasonNumber = -1;
     CFNumberGetValue(reason, CFNumberGetType(reason), &reasonNumber);
     
@@ -113,19 +116,14 @@ void mnAudioRouteChangeCallback(void *inUserData,
         /*
          * Deinit the remote io and set it up again depending on if input is available.
          */
-        UInt32 isAudioInputAvailable;
-        UInt32 size = sizeof(isAudioInputAvailable);
-        OSStatus result = AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable,
-                                                  &size,
-                                                  &isAudioInputAvailable);
-        mnEnsureNoAudioSessionError(result);
+        BOOL isAudioInputAvailable = [AVAudioSession sharedInstance].inputAvailable;
         
-        mnStopAndDeinitRemoteIO();
+        mnInstance_stopAndDestroyRemoteIOInstance(instance);
         
         int numInChannels = isAudioInputAvailable != 0 ? instance->requestedNumInputChannels : 0;
         UInt32 sessionCategory = numInChannels == 0 ? kAudioSessionCategory_MediaPlayback :
         kAudioSessionCategory_PlayAndRecord;
-        result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+        OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
         mnEnsureNoAudioSessionError(result);
         
         if (numInChannels > 0)
@@ -140,7 +138,7 @@ void mnAudioRouteChangeCallback(void *inUserData,
         result = AudioSessionSetActive(true);
         mnEnsureNoAudioSessionError(result); //-12986 seems to mean that kAudioSessionCategory_PlayAndRecord was set and no input is available
         
-        mnInitAndStartRemoteIO();
+        mnInstance_createAndStartRemoteIOInstance(instance);
     }
 }
 
