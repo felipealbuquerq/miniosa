@@ -10,6 +10,8 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include <AVFoundation/AVFoundation.h>
 
+#pragma mark Constants
+
 #define MN_IOS_TEMP_BUFFER_SIZE_IN_FRAMES 2048
 
 #pragma mark Buffer conversion helpers

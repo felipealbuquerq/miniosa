@@ -8,8 +8,6 @@
 
 #import "MNAudioEngine.h"
 
-#define kSampleRate 44100
-
 static int instanceCount = 0;
 
 @implementation MNAudioEngine
@@ -19,11 +17,14 @@ static int instanceCount = 0;
            callbackContext:(void*)context
                    options:(mnOptions*)optionsPtr
 {
-    self = [super init];
-    
     if (instanceCount > 0) {
+        @throw [NSException exceptionWithName:@"MNAudioEngineException"
+                                       reason:@"Attempting to create more than one MNAudioEngine instance"
+                                     userInfo:nil];
         return nil;
     }
+    
+    self = [super init];
     
     if (self) {
         instanceCount++;
@@ -40,6 +41,11 @@ static int instanceCount = 0;
     }
     
     return self;
+}
+
+-(void)dealloc
+{
+    instanceCount--;
 }
 
 -(void)start

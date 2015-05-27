@@ -18,8 +18,8 @@
 		C13D92AA1B14D70E00B1FD17 /* fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A11B14D70E00B1FD17 /* fifo.c */; };
 		C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A31B14D70E00B1FD17 /* mem.c */; };
 		C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A61B14D70E00B1FD17 /* miniosa.m */; };
-		C13D92AF1B14FE9100B1FD17 /* MNAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92AE1B14FE9100B1FD17 /* MNAudioEngine.m */; };
 		C13D92B21B15ADD400B1FD17 /* audiosession.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92B11B15ADD400B1FD17 /* audiosession.m */; };
+		C13D92B81B15C11700B1FD17 /* MNAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92B71B15C11700B1FD17 /* MNAudioEngine.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,12 +42,12 @@
 		C13D92A21B14D70E00B1FD17 /* fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fifo.h; sourceTree = "<group>"; };
 		C13D92A31B14D70E00B1FD17 /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
 		C13D92A41B14D70E00B1FD17 /* mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
-		C13D92A51B14D70E00B1FD17 /* miniosa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniosa.h; sourceTree = "<group>"; };
 		C13D92A61B14D70E00B1FD17 /* miniosa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = miniosa.m; sourceTree = "<group>"; };
-		C13D92AD1B14FE9100B1FD17 /* MNAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNAudioEngine.h; sourceTree = "<group>"; };
-		C13D92AE1B14FE9100B1FD17 /* MNAudioEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MNAudioEngine.m; sourceTree = "<group>"; };
 		C13D92B01B15ADD400B1FD17 /* audiosession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audiosession.h; sourceTree = "<group>"; };
 		C13D92B11B15ADD400B1FD17 /* audiosession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = audiosession.m; sourceTree = "<group>"; };
+		C13D92B51B15C11700B1FD17 /* miniosa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniosa.h; sourceTree = "<group>"; };
+		C13D92B61B15C11700B1FD17 /* MNAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNAudioEngine.h; sourceTree = "<group>"; };
+		C13D92B71B15C11700B1FD17 /* MNAudioEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MNAudioEngine.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +90,7 @@
 		C13D92811B14BB5200B1FD17 /* miniosa */ = {
 			isa = PBXGroup;
 			children = (
+				C13D92B41B15C11700B1FD17 /* public */,
 				C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */,
 				C13D929C1B14D70E00B1FD17 /* atomic.h */,
 				C13D92B01B15ADD400B1FD17 /* audiosession.h */,
@@ -102,10 +103,7 @@
 				C13D929E1B14D70E00B1FD17 /* instance.m */,
 				C13D92A31B14D70E00B1FD17 /* mem.c */,
 				C13D92A41B14D70E00B1FD17 /* mem.h */,
-				C13D92A51B14D70E00B1FD17 /* miniosa.h */,
 				C13D92A61B14D70E00B1FD17 /* miniosa.m */,
-				C13D92AD1B14FE9100B1FD17 /* MNAudioEngine.h */,
-				C13D92AE1B14FE9100B1FD17 /* MNAudioEngine.m */,
 			);
 			path = miniosa;
 			sourceTree = "<group>";
@@ -130,6 +128,16 @@
 				C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */,
 			);
 			path = res;
+			sourceTree = "<group>";
+		};
+		C13D92B41B15C11700B1FD17 /* public */ = {
+			isa = PBXGroup;
+			children = (
+				C13D92B51B15C11700B1FD17 /* miniosa.h */,
+				C13D92B61B15C11700B1FD17 /* MNAudioEngine.h */,
+				C13D92B71B15C11700B1FD17 /* MNAudioEngine.m */,
+			);
+			path = public;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,11 +212,11 @@
 				C13D928B1B14BB5200B1FD17 /* ViewController.swift in Sources */,
 				C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */,
 				C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */,
-				C13D92AF1B14FE9100B1FD17 /* MNAudioEngine.m in Sources */,
 				C13D92891B14BB5200B1FD17 /* AppDelegate.swift in Sources */,
 				C13D92AA1B14D70E00B1FD17 /* fifo.c in Sources */,
 				C13D929A1B14C80A00B1FD17 /* MyAudioEngine.m in Sources */,
 				C13D92B21B15ADD400B1FD17 /* audiosession.m in Sources */,
+				C13D92B81B15C11700B1FD17 /* MNAudioEngine.m in Sources */,
 				C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */,
 				C13D92A81B14D70E00B1FD17 /* instance.m in Sources */,
 				C13D92A91B14D70E00B1FD17 /* coreaudio_util.m in Sources */,

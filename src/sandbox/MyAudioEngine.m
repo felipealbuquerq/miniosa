@@ -15,6 +15,7 @@ typedef struct {
     float value;
 } Event;
 
+#pragma mark Audio buffer callbacks
 void inputBufferCallback(int numChannels, int numFrames, const float* samples, void* callbackContext)
 {
     MyAudioEngine* audioEngine = (__bridge MyAudioEngine*)callbackContext;
@@ -65,6 +66,8 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
     phase = fmodf(phase, 2.0f * M_PI);
 }
 
+#pragma mark MyAudioEngine
+
 @implementation MyAudioEngine
 
 +(MyAudioEngine*)sharedInstance
@@ -89,7 +92,6 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
         self.toneFrequency = 440.0f;
         mnFIFO_init(&toAudioThreadFifo, kFIFOCapacity, sizeof(Event));
         mnFIFO_init(&fromAudioThreadFifo, kFIFOCapacity, sizeof(Event));
-
     }
     
     return self;
