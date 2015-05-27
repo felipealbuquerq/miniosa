@@ -14,7 +14,8 @@
 @private
     mnAudioInputCallback audioInputCallback;
     mnAudioOutputCallback audioOutputCallback;
-    mnOptions* options;
+    BOOL useDefaultOptions;
+    mnOptions options;
     void* callbackContext;
 }
 

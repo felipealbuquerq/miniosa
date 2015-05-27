@@ -27,7 +27,13 @@ static int instanceCount = 0;
     
     if (self) {
         instanceCount++;
-        options = optionsPtr;
+        if (optionsPtr) {
+            memcpy(&options, optionsPtr, sizeof(mnOptions));
+            useDefaultOptions = NO;
+        }
+        else {
+            useDefaultOptions = YES;
+        }
         audioInputCallback = inputCallback;
         audioOutputCallback = outputCallback;
         callbackContext = context;
@@ -38,7 +44,7 @@ static int instanceCount = 0;
 
 -(void)start
 {
-    mnStart(audioInputCallback, audioOutputCallback, callbackContext, options);
+    mnStart(audioInputCallback, audioOutputCallback, callbackContext, useDefaultOptions ? NULL : &options);
 }
 
 -(void)stop

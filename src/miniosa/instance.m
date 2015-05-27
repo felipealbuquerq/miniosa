@@ -291,26 +291,29 @@ void mnInstance_createAndStartRemoteIOInstance(mnInstance* instance)
     assert(!error);
     
     /*enable playback*/
-    UInt32 flag = 1;
-    status = AudioUnitSetProperty(instance->auComponentInstance,
-                                  kAudioOutputUnitProperty_EnableIO,
-                                  kAudioUnitScope_Output,
-                                  OUTPUT_BUS_ID,
-                                  &flag,
-                                  sizeof(flag));
-    mnEnsureNoAudioUnitError(status);
-    
-    /*set up output audio format description*/
-    mnSetASBD(&instance->outputFormat, numOutChannels, sampleRate);
-    
-    /*apply format to output*/
-    status = AudioUnitSetProperty(instance->auComponentInstance,
-                                  kAudioUnitProperty_StreamFormat,
-                                  kAudioUnitScope_Input,
-                                  OUTPUT_BUS_ID,
-                                  &instance->outputFormat,
-                                  sizeof(instance->outputFormat));
-    mnEnsureNoAudioUnitError(status);
+    if (numOutChannels > 0)
+    {
+        UInt32 flag = 1;
+        status = AudioUnitSetProperty(instance->auComponentInstance,
+                                      kAudioOutputUnitProperty_EnableIO,
+                                      kAudioUnitScope_Output,
+                                      OUTPUT_BUS_ID,
+                                      &flag,
+                                      sizeof(flag));
+        mnEnsureNoAudioUnitError(status);
+        
+        /*set up output audio format description*/
+        mnSetASBD(&instance->outputFormat, numOutChannels, sampleRate);
+        
+        /*apply format to output*/
+        status = AudioUnitSetProperty(instance->auComponentInstance,
+                                      kAudioUnitProperty_StreamFormat,
+                                      kAudioUnitScope_Input,
+                                      OUTPUT_BUS_ID,
+                                      &instance->outputFormat,
+                                      sizeof(instance->outputFormat));
+        mnEnsureNoAudioUnitError(status);
+    }
     
     /*apply format to input if enabled*/
     if (numInChannels > 0)
@@ -362,17 +365,20 @@ void mnInstance_createAndStartRemoteIOInstance(mnInstance* instance)
     
     
     /*hook up the output callback*/
-    renderCallbackStruct.inputProc = mnCoreAudioOutputCallback;
-    renderCallbackStruct.inputProcRefCon = instance;
-    
-    status = AudioUnitSetProperty(instance->auComponentInstance,
-                                  kAudioUnitProperty_SetRenderCallback,
-                                  kAudioUnitScope_Global,
-                                  OUTPUT_BUS_ID,
-                                  &renderCallbackStruct,
-                                  sizeof(renderCallbackStruct));
-    
-    mnEnsureNoAudioUnitError(status);
+    if (numOutChannels > 0)
+    {
+        renderCallbackStruct.inputProc = mnCoreAudioOutputCallback;
+        renderCallbackStruct.inputProcRefCon = instance;
+        
+        status = AudioUnitSetProperty(instance->auComponentInstance,
+                                      kAudioUnitProperty_SetRenderCallback,
+                                      kAudioUnitScope_Global,
+                                      OUTPUT_BUS_ID,
+                                      &renderCallbackStruct,
+                                      sizeof(renderCallbackStruct));
+        
+        mnEnsureNoAudioUnitError(status);
+    }
     
     /*init audio unit*/
     status = AudioUnitInitialize(instance->auComponentInstance);
