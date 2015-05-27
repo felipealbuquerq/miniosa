@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include <AVFoundation/AVFoundation.h>
 #include <AudioUnit/AudioUnit.h>
 
 #include "coreaudio_util.h"
@@ -107,29 +108,12 @@ void mnEnsureNoAudioSessionError(OSStatus result)
 
 void mnDebugPrintAudioSessionInfo()
 {
-    int category = -1;
-    int numOutChannels = -1;
-    int numInChannels = -1;
-    
-    int propertySize = sizeof(category);
-    
-    OSStatus status = AudioSessionGetProperty(kAudioSessionProperty_AudioCategory,
-                                              &propertySize,
-                                              &category);
-    assert(status == noErr);
-    
-    status = AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareInputNumberChannels,
-                                     &propertySize,
-                                     &numInChannels);
-    assert(status == noErr);
-    
-    status = AudioSessionGetProperty(kAudioSessionProperty_CurrentHardwareOutputNumberChannels,
-                                     &propertySize,
-                                     &numOutChannels);
-    assert(status == noErr);
+    NSString* category = [AVAudioSession sharedInstance].category;
+    int numOutChannels = [AVAudioSession sharedInstance].outputNumberOfChannels;
+    int numInChannels = [AVAudioSession sharedInstance].inputNumberOfChannels;
     
     printf("    Audio session info:\n");
-    printf("        category %d\n", category);
+    printf("        category %s\n", [category UTF8String]);
     printf("        n in ch  %d\n", numInChannels);
     printf("        n out ch %d\n", numOutChannels);
 }
@@ -137,7 +121,7 @@ void mnDebugPrintAudioSessionInfo()
 void mnDebugPrintRemoteIOInfo(AudioUnit audioUnit)
 {
     AudioStreamBasicDescription outFmt;
-    int sz = sizeof(AudioStreamBasicDescription);
+    UInt32 sz = sizeof(AudioStreamBasicDescription);
     AudioUnitGetProperty(audioUnit,
                          kAudioUnitProperty_StreamFormat,
                          kAudioUnitScope_Input,
@@ -155,22 +139,22 @@ void mnDebugPrintRemoteIOInfo(AudioUnit audioUnit)
                          &sz);
     
     printf("    Remote IO info:\n");
-    printf("        Input bits/channel %d\n", inFmt.mBitsPerChannel);
-    printf("        Input bytes/frame %d\n", inFmt.mBytesPerFrame);
-    printf("        Input bytes/packet %d\n", inFmt.mBytesPerPacket);
-    printf("        Input channels/frame %d\n", inFmt.mChannelsPerFrame);
-    printf("        Input format flags %d\n", inFmt.mFormatFlags);
-    printf("        Input format ID %d\n", inFmt.mFormatID);
-    printf("        Input frames per packet %d\n", inFmt.mFramesPerPacket);
-    printf("        Input sample rate %f\n", inFmt.mSampleRate);
+    printf("        Input bits/channel %ld\n", inFmt.mBitsPerChannel);
+    printf("        Input bytes/frame %ld\n", inFmt.mBytesPerFrame);
+    printf("        Input bytes/packet %ld\n", inFmt.mBytesPerPacket);
+    printf("        Input channels/frame %ld\n", inFmt.mChannelsPerFrame);
+    printf("        Input format flags %ld\n", inFmt.mFormatFlags);
+    printf("        Input format ID %ld\n", inFmt.mFormatID);
+    printf("        Input frames per packet %ld\n", inFmt.mFramesPerPacket);
+    printf("        Input sample rate %lf\n", inFmt.mSampleRate);
     printf("\n");
-    printf("        Output bits/channel %d\n", outFmt.mBitsPerChannel);
-    printf("        Output bytes/frame %d\n", outFmt.mBytesPerFrame);
-    printf("        Output bytes/packet %d\n", outFmt.mBytesPerPacket);
-    printf("        Output channels/frame %d\n", outFmt.mChannelsPerFrame);
-    printf("        Output format flags %d\n", outFmt.mFormatFlags);
-    printf("        Output format ID %d\n", outFmt.mFormatID);
-    printf("        Output frames per packet %d\n", outFmt.mFramesPerPacket);
+    printf("        Output bits/channel %ld\n", outFmt.mBitsPerChannel);
+    printf("        Output bytes/frame %ld\n", outFmt.mBytesPerFrame);
+    printf("        Output bytes/packet %ld\n", outFmt.mBytesPerPacket);
+    printf("        Output channels/frame %ld\n", outFmt.mChannelsPerFrame);
+    printf("        Output format flags %ld\n", outFmt.mFormatFlags);
+    printf("        Output format ID %ld\n", outFmt.mFormatID);
+    printf("        Output frames per packet %ld\n", outFmt.mFramesPerPacket);
     printf("        Output sample rate %f\n", outFmt.mSampleRate);
 }
 

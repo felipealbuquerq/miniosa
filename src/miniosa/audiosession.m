@@ -121,22 +121,31 @@ void mnAudioRouteChangeCallback(void *inUserData,
         mnInstance_stopAndDestroyRemoteIOInstance(instance);
         
         int numInChannels = isAudioInputAvailable != 0 ? instance->requestedNumInputChannels : 0;
-        UInt32 sessionCategory = numInChannels == 0 ? kAudioSessionCategory_MediaPlayback :
-        kAudioSessionCategory_PlayAndRecord;
-        OSStatus result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-        mnEnsureNoAudioSessionError(result);
+        
+        NSString* category = numInChannels == 0 ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord;
+        NSError* error = nil;
+        BOOL result = [[AVAudioSession sharedInstance] setCategory:category
+                                                             error:&error];
+        if (!result) {
+            NSLog(@"%@", [error localizedDescription]);
+            assert(false);
+        }
         
         if (numInChannels > 0)
         {
-            int val = 1;
-            result = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryDefaultToSpeaker,
-                                             sizeof(val),
-                                             &val);
-            mnEnsureNoAudioSessionError(result);
+            result =[[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+            if (!result) {
+                NSLog(@"%@", [error localizedDescription]);
+                assert(false);
+            }
         }
-        
-        result = AudioSessionSetActive(true);
-        mnEnsureNoAudioSessionError(result); //-12986 seems to mean that kAudioSessionCategory_PlayAndRecord was set and no input is available
+
+        result = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+        if (!result) {
+            //-12986 seems to mean that kAudioSessionCategory_PlayAndRecord was set and no input is available
+            NSLog(@"%@", [error localizedDescription]);
+            assert(false);
+        }
         
         mnInstance_createAndStartRemoteIOInstance(instance);
     }
@@ -158,6 +167,8 @@ void mnInitAudioSession(mnInstance* instance)
     /*
      * Initialize and activte audio session
      */
+    
+    
     status = AudioSessionInitialize(NULL, NULL, &mnAudioSessionInterruptionCallback, instance);
     if (status == kAudioSessionAlreadyInitialized)
     {
@@ -179,27 +190,28 @@ void mnInitAudioSession(mnInstance* instance)
     
     //check if audio input is available at all
     
-    UInt32 inputAvailable;
-    int propertySize = sizeof(inputAvailable);
-    status = AudioSessionGetProperty(kAudioSessionProperty_AudioInputAvailable, &propertySize, &inputAvailable);
-    assert(status == noErr);
+    BOOL inputAvailable = [AVAudioSession sharedInstance].inputAvailable;
     
-    if (inputAvailable == 0)
+    if (!inputAvailable)
     {
         //This device does not support audio input at this point
         //(this may change at any time, for example when connecting
         //a headset to an iPod touch).
     }
     
-    UInt32 sessionCategory = inputAvailable == 0 ? kAudioSessionCategory_MediaPlayback :
-    kAudioSessionCategory_PlayAndRecord;
-    status = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-    mnEnsureNoAudioSessionError(status);
+    NSString* sessionCategory = inputAvailable == 0 ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord;
+    NSError* error = nil;
+    BOOL result = [[AVAudioSession sharedInstance] setCategory:sessionCategory error:&error];
+    if (!result) {
+        NSLog(@"%@", [error localizedDescription]);
+        assert(false);
+    }
     
-    int val = 1;
-    status = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryDefaultToSpeaker,
-                                     sizeof(val),
-                                     &val);
+    result = [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error];
+    if (!result) {
+        NSLog(@"%@", [error localizedDescription]);
+        assert(false);
+    }
     
     status = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioInputAvailable,
                                              &mnInputAvailableChangeCallback,
