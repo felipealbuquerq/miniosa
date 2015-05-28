@@ -147,7 +147,7 @@ static int instanceCount = 0;
 -(id)initWithInputCallback:(mnAudioInputCallback)inputCallback
             outputCallback:(mnAudioOutputCallback)outputCallback
            callbackContext:(void*)context
-                   options:(mnOptions*)optionsPtr
+                   options:(MNOptions*)optionsPtr
 {
     if (instanceCount > 0) {
         @throw [NSException exceptionWithName:@"MNAudioEngineException"
@@ -161,10 +161,14 @@ static int instanceCount = 0;
     if (self) {
         instanceCount++;
         if (optionsPtr) {
-            memcpy(&options, optionsPtr, sizeof(mnOptions));
+            memcpy(&desiredOptions, optionsPtr, sizeof(MNOptions));
         }
         else {
-            mnOptions_setDefaults(&options);
+            //default options
+            desiredOptions.sampleRate = 44100;
+            desiredOptions.numberOfInputChannels = 1;
+            desiredOptions.numberOfOutputChannels = 2;
+            desiredOptions.bufferSizeInFrames = 512;
         }
         
         caCallbackContext.inputCallback = inputCallback;
@@ -211,7 +215,7 @@ static int instanceCount = 0;
 
 -(void)start
 {
-    BOOL micNeeded = options.numberOfInputChannels > 0;
+    BOOL micNeeded = desiredOptions.numberOfInputChannels > 0;
     
     if (micNeeded) {
         AVAudioSession* audioSession = [AVAudioSession sharedInstance];
@@ -262,14 +266,19 @@ static int instanceCount = 0;
 
 -(void)suspend
 {
-    [self stopRemoteIOInstance];
-    [self deactivateAudioSession];
+    if (caCallbackContext.remoteIOInstance) {
+        [self stopRemoteIOInstance];
+        [self deactivateAudioSession];
+    }
 }
 
 -(void)resume
 {
-    [self activateAudioSession];
-    [self startRemoteIOInstance];
+    if (caCallbackContext.remoteIOInstance) {
+        [self activateAudioSession];
+        [self startRemoteIOInstance];
+    }
+    
 }
 
 #pragma mark Remote IO
@@ -388,9 +397,9 @@ static int instanceCount = 0;
     [self ensureNoAudioUnitError:status];
     
     //enable input/output
-    const int numInChannels = options.numberOfInputChannels;
-    const int numOutChannels = options.numberOfOutputChannels;
-    const float sampleRate = options.sampleRate;
+    const int numInChannels = desiredOptions.numberOfInputChannels;
+    const int numOutChannels = desiredOptions.numberOfOutputChannels;
+    const float sampleRate = desiredOptions.sampleRate;
     
     const unsigned int OUTPUT_BUS_ID = 0;
     const unsigned int INPUT_BUS_ID = 1;
@@ -551,8 +560,17 @@ static int instanceCount = 0;
     //example when connecting a headset to an iPod touch.
     BOOL inputAvailable = audioSession.inputAvailable;
     
-    //pick a suitable audio session category
-    NSString* sessionCategory = inputAvailable == 0 ? AVAudioSessionCategoryPlayback : AVAudioSessionCategoryPlayAndRecord;
+    //pick and set a suitable audio session category
+    BOOL needsRecording = inputAvailable && desiredOptions.numberOfInputChannels > 0;
+    BOOL needsPlayback = desiredOptions.numberOfOutputChannels > 0;
+    NSString* sessionCategory = AVAudioSessionCategoryPlayback;
+    if (needsRecording && !needsPlayback) {
+        sessionCategory = AVAudioSessionCategoryRecord;
+    }
+    else if (needsRecording && needsPlayback) {
+        sessionCategory = AVAudioSessionCategoryPlayAndRecord;
+    }
+    
     result = [[AVAudioSession sharedInstance] setCategory:sessionCategory error:&error];
     if (!result) {
         NSLog(@"%@", [error localizedDescription]);
@@ -569,14 +587,14 @@ static int instanceCount = 0;
     }
     
     //set sample rate
-    result = [[AVAudioSession sharedInstance] setPreferredSampleRate:options.sampleRate error:&error];
+    result = [[AVAudioSession sharedInstance] setPreferredSampleRate:desiredOptions.sampleRate error:&error];
     if (!result) {
         NSLog(@"%@", [error localizedDescription]);
         assert(false);
     }
     
     //set buffer size (i.e latency)
-    Float32 preferredBufferDuration = options.bufferSizeInFrames / (float)options.sampleRate;
+    Float32 preferredBufferDuration = desiredOptions.bufferSizeInFrames / (float)desiredOptions.sampleRate;
     result = [[AVAudioSession sharedInstance] setPreferredIOBufferDuration:preferredBufferDuration error:&error];
     if (!result) {
         NSLog(@"%@", [error localizedDescription]);
@@ -610,12 +628,12 @@ static int instanceCount = 0;
                                                  name:AVAudioSessionMediaServicesWereResetNotification
                                                object:nil];
     
+    //Finally, active the audio session
     result = [audioSession setActive:true error:&error];
     if (!result) {
         NSLog(@"%@", [error localizedDescription]);
         assert(false);
     }
-
 }
 
 -(void)deactivateAudioSession

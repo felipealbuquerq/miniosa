@@ -10,12 +10,9 @@
 		C13D928F1B14BB5B00B1FD17 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C13D928D1B14BB5B00B1FD17 /* Images.xcassets */; };
 		C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */; };
 		C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */; };
-		C13D92A81B14D70E00B1FD17 /* instance.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D929E1B14D70E00B1FD17 /* instance.m */; };
 		C13D92A91B14D70E00B1FD17 /* coreaudio_util.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */; };
 		C13D92AA1B14D70E00B1FD17 /* fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A11B14D70E00B1FD17 /* fifo.c */; };
 		C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A31B14D70E00B1FD17 /* mem.c */; };
-		C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92A61B14D70E00B1FD17 /* miniosa.m */; };
-		C13D92B21B15ADD400B1FD17 /* audiosession.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92B11B15ADD400B1FD17 /* audiosession.m */; };
 		C13D92B81B15C11700B1FD17 /* MNAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92B71B15C11700B1FD17 /* MNAudioEngine.m */; };
 		C13D92E11B15E13F00B1FD17 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92DB1B15E13F00B1FD17 /* AppDelegate.swift */; };
 		C13D92E21B15E13F00B1FD17 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C13D92DC1B15E13F00B1FD17 /* Info.plist */; };
@@ -29,18 +26,12 @@
 		C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = atomic_darwin.c; sourceTree = "<group>"; };
 		C13D929C1B14D70E00B1FD17 /* atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomic.h; sourceTree = "<group>"; };
-		C13D929D1B14D70E00B1FD17 /* instance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instance.h; sourceTree = "<group>"; };
-		C13D929E1B14D70E00B1FD17 /* instance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = instance.m; sourceTree = "<group>"; };
 		C13D929F1B14D70E00B1FD17 /* coreaudio_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreaudio_util.h; sourceTree = "<group>"; };
 		C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = coreaudio_util.m; sourceTree = "<group>"; };
 		C13D92A11B14D70E00B1FD17 /* fifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fifo.c; sourceTree = "<group>"; };
 		C13D92A21B14D70E00B1FD17 /* fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fifo.h; sourceTree = "<group>"; };
 		C13D92A31B14D70E00B1FD17 /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
 		C13D92A41B14D70E00B1FD17 /* mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
-		C13D92A61B14D70E00B1FD17 /* miniosa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = miniosa.m; sourceTree = "<group>"; };
-		C13D92B01B15ADD400B1FD17 /* audiosession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audiosession.h; sourceTree = "<group>"; };
-		C13D92B11B15ADD400B1FD17 /* audiosession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = audiosession.m; sourceTree = "<group>"; };
-		C13D92B51B15C11700B1FD17 /* miniosa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miniosa.h; sourceTree = "<group>"; };
 		C13D92B61B15C11700B1FD17 /* MNAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNAudioEngine.h; sourceTree = "<group>"; };
 		C13D92B71B15C11700B1FD17 /* MNAudioEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MNAudioEngine.m; sourceTree = "<group>"; };
 		C13D92DB1B15E13F00B1FD17 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -94,17 +85,12 @@
 				C13D92B41B15C11700B1FD17 /* public */,
 				C13D929B1B14D70E00B1FD17 /* atomic_darwin.c */,
 				C13D929C1B14D70E00B1FD17 /* atomic.h */,
-				C13D92B01B15ADD400B1FD17 /* audiosession.h */,
-				C13D92B11B15ADD400B1FD17 /* audiosession.m */,
 				C13D929F1B14D70E00B1FD17 /* coreaudio_util.h */,
 				C13D92A01B14D70E00B1FD17 /* coreaudio_util.m */,
 				C13D92A11B14D70E00B1FD17 /* fifo.c */,
 				C13D92A21B14D70E00B1FD17 /* fifo.h */,
-				C13D929D1B14D70E00B1FD17 /* instance.h */,
-				C13D929E1B14D70E00B1FD17 /* instance.m */,
 				C13D92A31B14D70E00B1FD17 /* mem.c */,
 				C13D92A41B14D70E00B1FD17 /* mem.h */,
-				C13D92A61B14D70E00B1FD17 /* miniosa.m */,
 			);
 			path = miniosa;
 			sourceTree = "<group>";
@@ -121,7 +107,6 @@
 		C13D92B41B15C11700B1FD17 /* public */ = {
 			isa = PBXGroup;
 			children = (
-				C13D92B51B15C11700B1FD17 /* miniosa.h */,
 				C13D92B61B15C11700B1FD17 /* MNAudioEngine.h */,
 				C13D92B71B15C11700B1FD17 /* MNAudioEngine.m */,
 			);
@@ -213,13 +198,10 @@
 			files = (
 				C13D92E11B15E13F00B1FD17 /* AppDelegate.swift in Sources */,
 				C13D92A71B14D70E00B1FD17 /* atomic_darwin.c in Sources */,
-				C13D92AC1B14D70E00B1FD17 /* miniosa.m in Sources */,
 				C13D92E41B15E13F00B1FD17 /* ViewController.swift in Sources */,
 				C13D92AA1B14D70E00B1FD17 /* fifo.c in Sources */,
-				C13D92B21B15ADD400B1FD17 /* audiosession.m in Sources */,
 				C13D92B81B15C11700B1FD17 /* MNAudioEngine.m in Sources */,
 				C13D92AB1B14D70E00B1FD17 /* mem.c in Sources */,
-				C13D92A81B14D70E00B1FD17 /* instance.m in Sources */,
 				C13D92A91B14D70E00B1FD17 /* coreaudio_util.m in Sources */,
 				C13D92E31B15E13F00B1FD17 /* MyAudioEngine.m in Sources */,
 			);

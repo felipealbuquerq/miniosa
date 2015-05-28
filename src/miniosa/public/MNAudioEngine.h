@@ -7,7 +7,17 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import "miniosa.h"
+
+typedef struct {
+    float sampleRate;
+    int numberOfInputChannels;
+    int numberOfOutputChannels;
+    int bufferSizeInFrames;
+} MNOptions;
+
+typedef void (*mnAudioInputCallback)(int numChannels, int numFrames, const float* samples, void* callbackContext);
+
+typedef void (*mnAudioOutputCallback)(int numChannels, int numFrames, float* samples, void* callbackContext);
 
 typedef struct {
 
@@ -28,7 +38,7 @@ typedef struct {
 @interface MNAudioEngine : NSObject<AVAudioSessionDelegate>
 {
 @private
-    mnOptions options;
+    MNOptions desiredOptions;
     BOOL hasShownMicPermissionErrorDialog;
     
     CoreAudioCallbackContext caCallbackContext;
@@ -37,7 +47,7 @@ typedef struct {
 -(id)initWithInputCallback:(mnAudioInputCallback)inputCallback
             outputCallback:(mnAudioOutputCallback)outputCallback
            callbackContext:(void*)context
-                   options:(mnOptions*)options;
+                   options:(MNOptions*)options;
 
 -(void)start;
 
