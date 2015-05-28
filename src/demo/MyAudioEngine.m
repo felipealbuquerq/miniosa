@@ -109,7 +109,7 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
     event.value = self.toneFrequency;
     mnFIFO_push(&toAudioThreadFifo, &event);
     
-    printf("peak level is %f\n", self.peakLevel);
+    //printf("peak level is %f\n", self.peakLevel);
 }
 
 

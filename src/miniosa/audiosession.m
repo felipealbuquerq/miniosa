@@ -168,7 +168,6 @@ void mnInitAudioSession(mnInstance* instance)
      * Initialize and activte audio session
      */
     
-    
     status = AudioSessionInitialize(NULL, NULL, &mnAudioSessionInterruptionCallback, instance);
     if (status == kAudioSessionAlreadyInitialized)
     {
@@ -212,6 +211,7 @@ void mnInitAudioSession(mnInstance* instance)
         NSLog(@"%@", [error localizedDescription]);
         assert(false);
     }
+    
     
     status = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioInputAvailable,
                                              &mnInputAvailableChangeCallback,

@@ -6,17 +6,32 @@
 //  Copyright (c) 2015 Stuffmatic. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "miniosa.h"
 
-@interface MNAudioEngine : NSObject
+typedef struct {
+
+    mnAudioInputCallback inputCallback;
+    mnAudioOutputCallback outputCallback;
+    void* userCallbackContext;
+    AudioComponentInstance remoteIOInstance;
+    /** A buffer list for storing input samples. */
+    AudioBufferList inputBufferList;
+    /** The size in bytes of the input sample buffer. */
+    int inputBufferSizeInBytes;
+    
+    float* inputScratchBuffer;
+    float* outputScratchBuffer;
+} CoreAudioCallbackContext;
+
+
+@interface MNAudioEngine : NSObject<AVAudioSessionDelegate>
 {
 @private
-    mnAudioInputCallback audioInputCallback;
-    mnAudioOutputCallback audioOutputCallback;
     mnOptions options;
-    void* callbackContext;
     BOOL hasShownMicPermissionErrorDialog;
+    
+    CoreAudioCallbackContext caCallbackContext;
 }
 
 -(id)initWithInputCallback:(mnAudioInputCallback)inputCallback
