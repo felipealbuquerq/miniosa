@@ -166,7 +166,7 @@ static int instanceCount = 0;
         else {
             //default options
             desiredOptions.sampleRate = 44100;
-            desiredOptions.numberOfInputChannels = 1;
+            desiredOptions.numberOfInputChannels = 0;
             desiredOptions.numberOfOutputChannels = 2;
             desiredOptions.bufferSizeInFrames = 512;
         }
@@ -187,6 +187,7 @@ static int instanceCount = 0;
 
 -(void)dealloc
 {
+    [self stop];
     instanceCount--;
 }
 
@@ -221,7 +222,7 @@ static int instanceCount = 0;
         AVAudioSession* audioSession = [AVAudioSession sharedInstance];
         
         if ([audioSession respondsToSelector:@selector(recordPermission)]) {
-            //iOS8 permission flow
+            //iOS8 mic permission request flow
             
             if (audioSession.recordPermission == AVAudioSessionRecordPermissionGranted) {
                 //we're good to go
@@ -239,7 +240,7 @@ static int instanceCount = 0;
             }
         }
         else {
-            //iOS7 permission flow
+            //iOS7 mic permission request flow
             [audioSession requestRecordPermission:^(BOOL granted) {
                 if (!granted && [[NSUserDefaults standardUserDefaults] boolForKey:kHasShownMicPermissionPromptSettingsKey]) {
                     [self showMicrophonePermissionErrorMessage];
@@ -428,7 +429,7 @@ static int instanceCount = 0;
         [self ensureNoAudioUnitError:status];
         
         //Allocate buffer for storing float output values passed to the user
-        caCallbackContext.outputScratchBuffer = MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numInChannels, "output scratch buffer");
+        caCallbackContext.outputScratchBuffer = MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numOutChannels, "output scratch buffer");
         
         //Hook up output callback
         AURenderCallbackStruct renderCallbackStruct;
@@ -562,12 +563,8 @@ static int instanceCount = 0;
     
     //pick and set a suitable audio session category
     BOOL needsRecording = inputAvailable && desiredOptions.numberOfInputChannels > 0;
-    BOOL needsPlayback = desiredOptions.numberOfOutputChannels > 0;
     NSString* sessionCategory = AVAudioSessionCategoryPlayback;
-    if (needsRecording && !needsPlayback) {
-        sessionCategory = AVAudioSessionCategoryRecord;
-    }
-    else if (needsRecording && needsPlayback) {
+    if (needsRecording) {
         sessionCategory = AVAudioSessionCategoryPlayAndRecord;
     }
     
@@ -628,6 +625,8 @@ static int instanceCount = 0;
                                                  name:AVAudioSessionMediaServicesWereResetNotification
                                                object:nil];
     
+    audioSession.delegate = self;
+    
     //Finally, active the audio session
     result = [audioSession setActive:true error:&error];
     if (!result) {
@@ -650,10 +649,26 @@ static int instanceCount = 0;
 }
 
 #pragma mark AVAudioSessionDelegate
-/* notification for input become available or unavailable */
+// notification for input become available or unavailable
 - (void)inputIsAvailableChanged:(BOOL)isInputAvailable
 {
+    //TODO: this API is deprecated
     
+    if (desiredOptions.numberOfInputChannels > 0) {
+        if (isInputAvailable) {
+            //recording is requested and input became available
+            [self stop];
+            [self start];
+        }
+        else {
+            //recording is requested and input became unavailable
+            [self stop];
+            [self start];
+        }
+    }
+    else {
+        //recording is not requested, so this notifications can be ignored
+    }
 }
 
 #pragma mark Audio session notifications

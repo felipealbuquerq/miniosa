@@ -82,11 +82,16 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
 
 -(id)init
 {
+    MNOptions options;
+    options.sampleRate = kSampleRate;
+    options.numberOfInputChannels = 1;
+    options.numberOfOutputChannels = 2;
+    
     self = [super initWithInputCallback:inputBufferCallback
                          outputCallback:outputBufferCallback
                         callbackContext:(void*)self
-                                options:NULL];
-    
+                                options:&options];
+
     if (self) {
         self.toneFrequency = 440.0f;
         mnFIFO_init(&toAudioThreadFifo, kFIFOCapacity, sizeof(Event));
