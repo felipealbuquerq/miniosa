@@ -19,6 +19,7 @@ typedef void (*mnAudioInputCallback)(int numChannels, int numFrames, const float
 
 typedef void (*mnAudioOutputCallback)(int numChannels, int numFrames, float* samples, void* callbackContext);
 
+//TODO: hide this struct from public API
 typedef struct {
 
     mnAudioInputCallback inputCallback;

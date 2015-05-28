@@ -10,17 +10,29 @@
 #import "MNAudioEngine.h"
 #import "fifo.h"
 
+@protocol MyAudioEngineDelegate <NSObject>
+
+-(void)inputLevelChanged:(float)newLevel;
+
+@end
+
 @interface MyAudioEngine : MNAudioEngine
 {
 @public
     mnFIFO toAudioThreadFifo;
     mnFIFO fromAudioThreadFifo;
+    
+    float smoothedToneFrequency;
+    float targetToneFrequency;
+    
+    float smoothedPeakValue;
 }
 
 +(MyAudioEngine*)sharedInstance;
 
 @property (readonly) float peakLevel;
 @property float toneFrequency;
+@property (nonatomic, weak) id <MyAudioEngineDelegate> delegate;
 
 -(void)update;
 

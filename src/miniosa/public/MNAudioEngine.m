@@ -99,8 +99,8 @@ static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
                                           UInt32 inNumberFrames,
                                           AudioBufferList *ioData)
 {
-    //#define KWL_DEBUG_CA_DEADLINE
-#ifdef KWL_DEBUG_CA_DEADLINE
+    //#define MN_DEBUG_CA_DEADLINE
+#ifdef MN_DEBUG_CA_DEADLINE
     static double prevDelta = 0.0;
     static double ht = 0.0;
     double delta = inTimeStamp->mSampleTime - ht;
@@ -112,7 +112,7 @@ static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
         //mnDebugPrintRemoteIOInfo();
     }
     prevDelta = delta;
-#endif
+#endif //MN_DEBUG_CA_DEADLINE
     
     CoreAudioCallbackContext* context = (CoreAudioCallbackContext*)inRefCon;
     
@@ -627,7 +627,7 @@ static int instanceCount = 0;
     
     audioSession.delegate = self;
     
-    //Finally, active the audio session
+    //Finally, activate the audio session
     result = [audioSession setActive:true error:&error];
     if (!result) {
         NSLog(@"%@", [error localizedDescription]);
@@ -640,6 +640,7 @@ static int instanceCount = 0;
     //stop subscribing to audio session notifications
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    //deactivate the session
     NSError* error = nil;
     BOOL result = [[AVAudioSession sharedInstance] setActive:NO
                                                        error:&error];
@@ -780,7 +781,7 @@ static int instanceCount = 0;
      an infinite loop because the audio session category is set below, which will in
      turn trigger kAudioSessionRouteChangeReason_CategoryChange and so on.
      */
-    //TODO: figure out exactly what resons to respond to and how
+    //TODO: figure out exactly what reasons to respond to and how
     if (reason.integerValue != AVAudioSessionRouteChangeReasonCategoryChange &&
         reason.integerValue != AVAudioSessionRouteChangeReasonOverride)
     {

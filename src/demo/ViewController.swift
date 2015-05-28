@@ -8,18 +8,21 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, MyAudioEngineDelegate{
 
     private var resumeButton:UIButton!
     private var suspendButton:UIButton!
     private var startButton:UIButton!
     private var stopButton:UIButton!
     private var frequencySlider:UISlider!
+    private var inputLevelMeter:UIView!
     
     private var displayLink:CADisplayLink!
     
     init() {
         super.init(nibName: nil, bundle: nil)
+        
+        MyAudioEngine.sharedInstance().delegate = self
     }
 
     required init(coder aDecoder: NSCoder) {
@@ -32,7 +35,9 @@ class ViewController: UIViewController {
         
         frequencySlider = UISlider()
         frequencySlider.addTarget(self, action: "frequencySliderChanged:", forControlEvents: .ValueChanged)
+        frequencySlider.value = 0.5
         view.addSubview(frequencySlider)
+        frequencySliderChanged(frequencySlider)
         
         resumeButton = UIButton()
         resumeButton.setTitle("resume", forState: .Normal)
@@ -53,12 +58,29 @@ class ViewController: UIViewController {
         stopButton.setTitle("stop", forState: .Normal)
         stopButton.addTarget(self, action: "stopPressed:", forControlEvents: .TouchUpInside)
         view.addSubview(stopButton)
+        
+        inputLevelMeter = UIView()
+        inputLevelMeter.backgroundColor = UIColor.greenColor()
+        view.addSubview(inputLevelMeter);
     }
     
     override func viewWillAppear(animated: Bool) {
         displayLink = CADisplayLink(target: self, selector: "displayLinkCallback")
         displayLink.frameInterval = 2
         displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSRunLoopCommonModes)
+        
+        var views = [startButton, stopButton, suspendButton, resumeButton, frequencySlider, inputLevelMeter]
+        
+        let buttonX:CGFloat = 20
+        let buttonHeight:CGFloat = 44
+        let buttonSpacing:CGFloat = 50
+        let buttonWidth = view.bounds.size.width - 2 * buttonX
+        
+        for i in 0..<views.count {
+            
+            var button = views[i]
+            button.frame = CGRectMake(buttonX, buttonX + CGFloat(i) * buttonSpacing, buttonWidth, buttonHeight)
+        }
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -68,23 +90,6 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        var views = [startButton, stopButton, suspendButton, resumeButton, frequencySlider]
-        
-        let buttonX:CGFloat = 20
-        let buttonHeight:CGFloat = 44
-        let buttonSpacing:CGFloat = 50
-        let buttonWidth = view.bounds.size.width - 2 * buttonX
-
-        for i in 0..<views.count {
-            
-            var button = views[i]
-            button.frame = CGRectMake(buttonX, buttonX + CGFloat(i) * buttonSpacing, buttonWidth, buttonHeight)
-        }
     }
     
     //MARK: Display link
@@ -111,7 +116,14 @@ class ViewController: UIViewController {
     }
     
     func frequencySliderChanged(slider:UISlider) {
-        MyAudioEngine.sharedInstance().toneFrequency = 300 + 700 * slider.value
+        MyAudioEngine.sharedInstance().toneFrequency = 50 + 950 * slider.value
+    }
+    
+    //MARK: MyAudioEngineDelegate
+    func inputLevelChanged(newLevel: Float) {
+        var meterFrame = inputLevelMeter.frame
+        meterFrame.size.width = round(frequencySlider.frame.width * CGFloat(newLevel))
+        inputLevelMeter.frame = meterFrame
     }
 }
 
