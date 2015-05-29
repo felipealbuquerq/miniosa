@@ -22,7 +22,6 @@
  SOFTWARE.
  */
 
-#import "mem.h"
 #import "MNAudioEngine.h"
 
 #import <UIKit/UIKit.h>
@@ -69,7 +68,7 @@ static inline void mnInt16ToFloat(const short* sourceBuffer, float* targetBuffer
     }
 }
 
-#pragma mark Core audio buffer callbacks
+#pragma mark Remote I/O buffer callbacks
 
 /**
  * This struct contains everything needed to receive input buffers and 
@@ -80,11 +79,11 @@ typedef struct {
     mnAudioInputCallback inputCallback;
     /** A callback to render audio output buffers. */
     mnAudioOutputCallback outputCallback;
-    /** A pointer passed to the output and input callbacks. */
+    /** A pointer passed to \c inputCallback and \c outputCallback. */
     void* userCallbackContext;
     /** The remote I/O instance. */
     AudioComponentInstance remoteIOInstance;
-    /** A buffer list for storing input samples.*/
+    /** A buffer list for storing input samples. */
     AudioBufferList inputBufferList;
     /** The size in bytes of the input sample buffer. */
     int inputBufferSizeInBytes;
@@ -97,12 +96,12 @@ typedef struct {
 /**
  * Remote I/O callback for receiving input audio buffers.
  */
-static OSStatus mnCoreAudioInputCallback(void *inRefCon,
-                                         AudioUnitRenderActionFlags *ioActionFlags,
-                                         const AudioTimeStamp *inTimeStamp,
-                                         UInt32 inBusNumber,
-                                         UInt32 inNumberFrames,
-                                         AudioBufferList *ioData)
+static OSStatus remoteIOInputCallback(void *inRefCon,
+                                      AudioUnitRenderActionFlags *ioActionFlags,
+                                      const AudioTimeStamp *inTimeStamp,
+                                      UInt32 inBusNumber,
+                                      UInt32 inNumberFrames,
+                                      AudioBufferList *ioData)
 {
     CoreAudioCallbackContext* context = (CoreAudioCallbackContext*)inRefCon;
     
@@ -138,12 +137,12 @@ static OSStatus mnCoreAudioInputCallback(void *inRefCon,
 /**
  * Remote I/O callback for rendering output audio buffers.
  */
-static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
-                                          AudioUnitRenderActionFlags *ioActionFlags,
-                                          const AudioTimeStamp *inTimeStamp,
-                                          UInt32 inBusNumber,
-                                          UInt32 inNumberFrames,
-                                          AudioBufferList *ioData)
+static OSStatus remoteIOOutputCallback(void *inRefCon,
+                                       AudioUnitRenderActionFlags *ioActionFlags,
+                                       const AudioTimeStamp *inTimeStamp,
+                                       UInt32 inBusNumber,
+                                       UInt32 inNumberFrames,
+                                       AudioBufferList *ioData)
 {
 //#define MN_DEBUG_CA_DEADLINE
 #ifdef MN_DEBUG_CA_DEADLINE
@@ -525,11 +524,11 @@ static int instanceCount = 0;
                                                           sizeof(outputFormat))];
         
         //Allocate buffer for storing float output values passed to the user
-        caCallbackContext.outputScratchBuffer = MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numOutChannels, "output scratch buffer");
+        caCallbackContext.outputScratchBuffer = malloc(maxNumberOfFramesPerSlice * sizeof(float) * numOutChannels);
         
         //Hook up output callback
         AURenderCallbackStruct renderCallbackStruct;
-        renderCallbackStruct.inputProc = mnCoreAudioOutputCallback;
+        renderCallbackStruct.inputProc = remoteIOOutputCallback;
         renderCallbackStruct.inputProcRefCon = &caCallbackContext;
         
         [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
@@ -569,17 +568,15 @@ static int instanceCount = 0;
         caCallbackContext.inputBufferSizeInBytes = 2 * numInChannels * maxNumberOfFramesPerSlice;
         caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize = caCallbackContext.inputBufferSizeInBytes;
         caCallbackContext.inputBufferList.mBuffers[0].mData =
-            MN_MALLOC(caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize,
-                      "inputBufferList sample data");
+            malloc(caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize);
         
         //Allocate buffer for storing float input values passed to the user
         caCallbackContext.inputScratchBuffer =
-            MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numInChannels,
-                      "input scratch buffer");
+            malloc(maxNumberOfFramesPerSlice * sizeof(float) * numInChannels);
         
         //Hook up input callback
         AURenderCallbackStruct renderCallbackStruct;
-        renderCallbackStruct.inputProc = mnCoreAudioInputCallback;
+        renderCallbackStruct.inputProc = remoteIOInputCallback;
         renderCallbackStruct.inputProcRefCon = &caCallbackContext;
         
         [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
@@ -618,17 +615,17 @@ static int instanceCount = 0;
         
         //release buffers
         if (caCallbackContext.outputScratchBuffer) {
-            MN_FREE(caCallbackContext.outputScratchBuffer);
+            free(caCallbackContext.outputScratchBuffer);
             caCallbackContext.outputScratchBuffer = NULL;
         }
         
         if (caCallbackContext.inputScratchBuffer) {
-            MN_FREE(caCallbackContext.inputScratchBuffer);
+            free(caCallbackContext.inputScratchBuffer);
             caCallbackContext.inputScratchBuffer = NULL;
         }
         
         if (caCallbackContext.inputBufferList.mBuffers[0].mData) {
-            MN_FREE(caCallbackContext.inputBufferList.mBuffers[0].mData);
+            free(caCallbackContext.inputBufferList.mBuffers[0].mData);
             memset(&caCallbackContext.inputBufferList, 0, sizeof(AudioBufferList));
             caCallbackContext.inputBufferSizeInBytes = 0;
         }

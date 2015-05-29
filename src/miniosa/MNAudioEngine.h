@@ -58,8 +58,18 @@ typedef void (*mnAudioOutputCallback)(int numChannels,
                                       float* samples,
                                       void* callbackContext);
 
+/**
+ *
+ */
 @interface MNAudioEngine : NSObject<AVAudioSessionDelegate>
 
+/**
+ * Creates a new audio engine instance.
+ * @param inputCallback A callback for receiving input audio data. Ignored if NULL.
+ * @param outputCallback A callback for rendering output audio data. Ignored if NULL.
+ * @param callbackContext A pointer to pass to \c inputCallback and \c outputCallback.
+ * @param options Optional audio I/O options.
+ */
 -(id)initWithInputCallback:(mnAudioInputCallback)inputCallback
             outputCallback:(mnAudioOutputCallback)outputCallback
            callbackContext:(void*)context

@@ -16,7 +16,6 @@
 		C188734D1B183E8000A84E68 /* MNAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C18873431B183E8000A84E68 /* MNAudioEngine.m */; };
 		C188734E1B183E8000A84E68 /* atomic_darwin.c in Sources */ = {isa = PBXBuildFile; fileRef = C18873461B183E8000A84E68 /* atomic_darwin.c */; };
 		C18873501B183E8000A84E68 /* fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C18873491B183E8000A84E68 /* fifo.c */; };
-		C18873511B183E8000A84E68 /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = C188734B1B183E8000A84E68 /* mem.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,8 +34,6 @@
 		C18873461B183E8000A84E68 /* atomic_darwin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = atomic_darwin.c; sourceTree = "<group>"; };
 		C18873491B183E8000A84E68 /* fifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fifo.c; sourceTree = "<group>"; };
 		C188734A1B183E8000A84E68 /* fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fifo.h; sourceTree = "<group>"; };
-		C188734B1B183E8000A84E68 /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
-		C188734C1B183E8000A84E68 /* mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,8 +112,6 @@
 				C18873461B183E8000A84E68 /* atomic_darwin.c */,
 				C18873491B183E8000A84E68 /* fifo.c */,
 				C188734A1B183E8000A84E68 /* fifo.h */,
-				C188734B1B183E8000A84E68 /* mem.c */,
-				C188734C1B183E8000A84E68 /* mem.h */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -196,7 +191,6 @@
 				C188734E1B183E8000A84E68 /* atomic_darwin.c in Sources */,
 				C18873501B183E8000A84E68 /* fifo.c in Sources */,
 				C13D92E41B15E13F00B1FD17 /* ViewController.swift in Sources */,
-				C18873511B183E8000A84E68 /* mem.c in Sources */,
 				C13D92E31B15E13F00B1FD17 /* MyAudioEngine.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

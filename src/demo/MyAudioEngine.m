@@ -111,6 +111,12 @@ void outputBufferCallback(int numChannels, int numFrames, float* samples, void* 
     return self;
 }
 
+-(void)dealloc
+{
+    mnFIFO_deinit(&toAudioThreadFifo);
+    mnFIFO_deinit(&fromAudioThreadFifo);
+}
+
 -(void)update
 {
     while (!mnFIFO_isEmpty(&fromAudioThreadFifo))
