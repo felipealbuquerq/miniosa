@@ -1,16 +1,31 @@
-//
-//  AudioEngine.m
-//  miniosa
-//
-//  Created by perarne on 5/26/15.
-//  Copyright (c) 2015 Stuffmatic. All rights reserved.
-//
+/*
+ The MIT License (MIT)
+ 
+ Copyright (c) 2015 Per Gantelius
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 #import "mem.h"
 #import "MNAudioEngine.h"
 
 #import <UIKit/UIKit.h>
-
 
 #pragma mark Buffer conversion helpers
 
@@ -55,6 +70,33 @@ static inline void mnInt16ToFloat(const short* sourceBuffer, float* targetBuffer
 }
 
 #pragma mark Core audio buffer callbacks
+
+/**
+ * This struct contains everything needed to receive input buffers and 
+ * render output buffers in the remote I/O callbacks.
+ */
+typedef struct {
+    /** A callback to receive audio input buffers. */
+    mnAudioInputCallback inputCallback;
+    /** A callback to render audio output buffers. */
+    mnAudioOutputCallback outputCallback;
+    /** A pointer passed to the output and input callbacks. */
+    void* userCallbackContext;
+    /** The remote I/O instance. */
+    AudioComponentInstance remoteIOInstance;
+    /** A buffer list for storing input samples.*/
+    AudioBufferList inputBufferList;
+    /** The size in bytes of the input sample buffer. */
+    int inputBufferSizeInBytes;
+    /** A buffer for temporary storage of input samples.*/
+    float* inputScratchBuffer;
+    /** A buffer for temporary storage of output samples.*/
+    float* outputScratchBuffer;
+} CoreAudioCallbackContext;
+
+/**
+ * Remote I/O callback for receiving input audio buffers.
+ */
 static OSStatus mnCoreAudioInputCallback(void *inRefCon,
                                          AudioUnitRenderActionFlags *ioActionFlags,
                                          const AudioTimeStamp *inTimeStamp,
@@ -64,21 +106,19 @@ static OSStatus mnCoreAudioInputCallback(void *inRefCon,
 {
     CoreAudioCallbackContext* context = (CoreAudioCallbackContext*)inRefCon;
     
-    context->inputBufferList.mBuffers[0].mDataByteSize = context->inputBufferSizeInBytes;
     //fill the already allocated input buffer list with samples
-    OSStatus status;
-    status = AudioUnitRender(context->remoteIOInstance,
-                             ioActionFlags,
-                             inTimeStamp,
-                             inBusNumber,
-                             inNumberFrames,
-                             &context->inputBufferList);
+    OSStatus status = AudioUnitRender(context->remoteIOInstance,
+                                      ioActionFlags,
+                                      inTimeStamp,
+                                      inBusNumber,
+                                      inNumberFrames,
+                                      &context->inputBufferList);
     assert(status == 0);
     
     const int numChannels = context->inputBufferList.mBuffers[0].mNumberChannels;
     const short* sourceBuffer = (short*)context->inputBufferList.mBuffers[0].mData;
     
-    //Convert input buffer samples to floats
+    //Convert input samples to floats
     mnInt16ToFloat(sourceBuffer,
                    context->inputScratchBuffer,
                    inNumberFrames * numChannels);
@@ -86,12 +126,18 @@ static OSStatus mnCoreAudioInputCallback(void *inRefCon,
     //Pass the converted buffer to the user
     if (context->inputCallback)
     {
-        context->inputCallback(numChannels, inNumberFrames, context->inputScratchBuffer, context->userCallbackContext);
+        context->inputCallback(numChannels,
+                               inNumberFrames,
+                               context->inputScratchBuffer,
+                               context->userCallbackContext);
     }
     
     return noErr;
 }
 
+/**
+ * Remote I/O callback for rendering output audio buffers.
+ */
 static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
                                           AudioUnitRenderActionFlags *ioActionFlags,
                                           const AudioTimeStamp *inTimeStamp,
@@ -99,7 +145,7 @@ static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
                                           UInt32 inNumberFrames,
                                           AudioBufferList *ioData)
 {
-    //#define MN_DEBUG_CA_DEADLINE
+//#define MN_DEBUG_CA_DEADLINE
 #ifdef MN_DEBUG_CA_DEADLINE
     static double prevDelta = 0.0;
     static double ht = 0.0;
@@ -120,7 +166,10 @@ static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
     
     //let the user render some audio
     if (context->outputCallback) {
-        context->outputCallback(numChannels, inNumberFrames, context->outputScratchBuffer, context->userCallbackContext);
+        context->outputCallback(numChannels,
+                                inNumberFrames,
+                                context->outputScratchBuffer,
+                                context->userCallbackContext);
         
         //convert the float samples and copy them to the target buffer
         short* targetBuffer = (short*)ioData->mBuffers[0].mData;
@@ -132,10 +181,19 @@ static OSStatus mnCoreAudioOutputCallback(void *inRefCon,
     return noErr;
 }
 
+#pragma mark MNAudioEngine
+
 #define kHasShownMicPermissionPromptSettingsKey @"kHasShownMicPermissionPromptSettingsKey"
+
 static int instanceCount = 0;
 
 @interface MNAudioEngine()
+{
+    @private
+    CoreAudioCallbackContext caCallbackContext;
+    MNOptions desiredOptions;
+    BOOL hasShownMicPermissionErrorDialog;
+}
 
 @property UIAlertView* micPermissionErrorAlert;
 
@@ -284,6 +342,47 @@ static int instanceCount = 0;
 
 #pragma mark Remote IO
 
+-(void)logRemoteIOInfo:(AudioUnit)audioUnit
+{
+    AudioStreamBasicDescription outFmt;
+    UInt32 sz = sizeof(AudioStreamBasicDescription);
+    AudioUnitGetProperty(audioUnit,
+                         kAudioUnitProperty_StreamFormat,
+                         kAudioUnitScope_Input,
+                         0,
+                         &outFmt,
+                         &sz);
+    
+    AudioStreamBasicDescription inFmt;
+    sz = sizeof(AudioStreamBasicDescription);
+    AudioUnitGetProperty(audioUnit,
+                         kAudioUnitProperty_StreamFormat,
+                         kAudioUnitScope_Output,
+                         1,
+                         &inFmt,
+                         &sz);
+    
+    NSLog(@"    Remote IO info");
+    NSLog(@"        Input bits/channel %ld\n", inFmt.mBitsPerChannel);
+    NSLog(@"        Input bytes/frame %ld\n", inFmt.mBytesPerFrame);
+    NSLog(@"        Input bytes/packet %ld\n", inFmt.mBytesPerPacket);
+    NSLog(@"        Input channels/frame %ld\n", inFmt.mChannelsPerFrame);
+    NSLog(@"        Input format flags %ld\n", inFmt.mFormatFlags);
+    NSLog(@"        Input format ID %ld\n", inFmt.mFormatID);
+    NSLog(@"        Input frames per packet %ld\n", inFmt.mFramesPerPacket);
+    NSLog(@"        Input sample rate %lf\n", inFmt.mSampleRate);
+    NSLog(@"");
+    NSLog(@"        Output bits/channel %ld\n", outFmt.mBitsPerChannel);
+    NSLog(@"        Output bytes/frame %ld\n", outFmt.mBytesPerFrame);
+    NSLog(@"        Output bytes/packet %ld\n", outFmt.mBytesPerPacket);
+    NSLog(@"        Output channels/frame %ld\n", outFmt.mChannelsPerFrame);
+    NSLog(@"        Output format flags %ld\n", outFmt.mFormatFlags);
+    NSLog(@"        Output format ID %ld\n", outFmt.mFormatID);
+    NSLog(@"        Output frames per packet %ld\n", outFmt.mFramesPerPacket);
+    NSLog(@"        Output sample rate %f\n", outFmt.mSampleRate);
+}
+
+
 -(void)ensureNoAudioUnitError:(OSStatus)result
 {
 #ifdef DEBUG
@@ -389,13 +488,12 @@ static int instanceCount = 0;
     //will request/provide. This number is used to allocate buffers.
     int maxNumberOfFramesPerSlice = 0;
     UInt32 s = sizeof(maxNumberOfFramesPerSlice);
-    status = AudioUnitGetProperty(caCallbackContext.remoteIOInstance,
-                                           kAudioUnitProperty_MaximumFramesPerSlice,
-                                           kAudioUnitScope_Global,
-                                           0,
-                                           &maxNumberOfFramesPerSlice,
-                                           &s);
-    [self ensureNoAudioUnitError:status];
+    [self ensureNoAudioUnitError:AudioUnitGetProperty(caCallbackContext.remoteIOInstance,
+                                                      kAudioUnitProperty_MaximumFramesPerSlice,
+                                                      kAudioUnitScope_Global,
+                                                      0,
+                                                      &maxNumberOfFramesPerSlice,
+                                                      &s)];
     
     //enable input/output
     const int numInChannels = desiredOptions.numberOfInputChannels;
@@ -409,24 +507,22 @@ static int instanceCount = 0;
     {
         //enable playback if requested
         UInt32 flag = 1;
-        status = AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
-                                      kAudioOutputUnitProperty_EnableIO,
-                                      kAudioUnitScope_Output,
-                                      OUTPUT_BUS_ID,
-                                      &flag,
-                                      sizeof(flag));
-        [self ensureNoAudioUnitError:status];
+        [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
+                                                          kAudioOutputUnitProperty_EnableIO,
+                                                          kAudioUnitScope_Output,
+                                                          OUTPUT_BUS_ID,
+                                                          &flag,
+                                                          sizeof(flag))];
         
         //Set output format
         AudioStreamBasicDescription outputFormat;
         [self setASBD:&outputFormat :numOutChannels :sampleRate];
-        status = AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
-                                      kAudioUnitProperty_StreamFormat,
-                                      kAudioUnitScope_Input,
-                                      OUTPUT_BUS_ID,
-                                      &outputFormat,
-                                      sizeof(outputFormat));
-        [self ensureNoAudioUnitError:status];
+        [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
+                                                          kAudioUnitProperty_StreamFormat,
+                                                          kAudioUnitScope_Input,
+                                                          OUTPUT_BUS_ID,
+                                                          &outputFormat,
+                                                          sizeof(outputFormat))];
         
         //Allocate buffer for storing float output values passed to the user
         caCallbackContext.outputScratchBuffer = MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numOutChannels, "output scratch buffer");
@@ -448,25 +544,23 @@ static int instanceCount = 0;
     {
         //Enable recording if requested
         UInt32 flag = 1;
-        status = AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
-                                      kAudioOutputUnitProperty_EnableIO,
-                                      kAudioUnitScope_Input,
-                                      INPUT_BUS_ID,
-                                      &flag,
-                                      sizeof(flag));
-        [self ensureNoAudioUnitError:status];
+        [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
+                                                          kAudioOutputUnitProperty_EnableIO,
+                                                          kAudioUnitScope_Input,
+                                                          INPUT_BUS_ID,
+                                                          &flag,
+                                                          sizeof(flag))];
     
         //Set input format
         AudioStreamBasicDescription inputFormat;
         [self setASBD:&inputFormat :numInChannels :sampleRate];
         
-        status = AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
-                                      kAudioUnitProperty_StreamFormat,
-                                      kAudioUnitScope_Output,
-                                      INPUT_BUS_ID,
-                                      &inputFormat,
-                                      sizeof(inputFormat));
-        [self ensureNoAudioUnitError:status];
+        [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
+                                                          kAudioUnitProperty_StreamFormat,
+                                                          kAudioUnitScope_Output,
+                                                          INPUT_BUS_ID,
+                                                          &inputFormat,
+                                                          sizeof(inputFormat))];
         
         //Allocate buffer containing raw input samples
         memset(&caCallbackContext.inputBufferList, 0, sizeof(AudioBufferList));
@@ -474,27 +568,27 @@ static int instanceCount = 0;
         caCallbackContext.inputBufferList.mBuffers[0].mNumberChannels = numInChannels;
         caCallbackContext.inputBufferSizeInBytes = 2 * numInChannels * maxNumberOfFramesPerSlice;
         caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize = caCallbackContext.inputBufferSizeInBytes;
-        caCallbackContext.inputBufferList.mBuffers[0].mData = MN_MALLOC(caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize, "inputBufferList sample data");
+        caCallbackContext.inputBufferList.mBuffers[0].mData =
+            MN_MALLOC(caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize,
+                      "inputBufferList sample data");
         
         //Allocate buffer for storing float input values passed to the user
-        caCallbackContext.inputScratchBuffer = MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numInChannels, "input scratch buffer");
+        caCallbackContext.inputScratchBuffer =
+            MN_MALLOC(maxNumberOfFramesPerSlice * sizeof(float) * numInChannels,
+                      "input scratch buffer");
         
         //Hook up input callback
         AURenderCallbackStruct renderCallbackStruct;
         renderCallbackStruct.inputProc = mnCoreAudioInputCallback;
         renderCallbackStruct.inputProcRefCon = &caCallbackContext;
         
-        status = AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
-                                      kAudioOutputUnitProperty_SetInputCallback,
-                                      kAudioUnitScope_Global,
-                                      OUTPUT_BUS_ID,
-                                      &renderCallbackStruct,
-                                      sizeof(renderCallbackStruct));
-        [self ensureNoAudioUnitError:status];
-        
+        [self ensureNoAudioUnitError:AudioUnitSetProperty(caCallbackContext.remoteIOInstance,
+                                                          kAudioOutputUnitProperty_SetInputCallback,
+                                                          kAudioUnitScope_Global,
+                                                          OUTPUT_BUS_ID,
+                                                          &renderCallbackStruct,
+                                                          sizeof(renderCallbackStruct))];
     }
-    
-    assert(status == noErr);
     
     //Initialize the audio unit, which is now ready to start.
     [self ensureNoAudioUnitError:AudioUnitInitialize(caCallbackContext.remoteIOInstance)];
@@ -647,6 +741,18 @@ static int instanceCount = 0;
     if (!result) {
         NSLog(@"%@", error.localizedDescription);
     }
+}
+
+-(void)logAudioSessionInfo
+{
+    NSString* category = [AVAudioSession sharedInstance].category;
+    int numOutChannels = [AVAudioSession sharedInstance].outputNumberOfChannels;
+    int numInChannels = [AVAudioSession sharedInstance].inputNumberOfChannels;
+    
+    NSLog(@"    Audio session info:");
+    NSLog(@"        category %@", category);
+    NSLog(@"        %d input channels", numInChannels);
+    NSLog(@"        %d output channels", numOutChannels);
 }
 
 #pragma mark AVAudioSessionDelegate

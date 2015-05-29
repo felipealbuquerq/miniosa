@@ -19,7 +19,7 @@ typedef struct {
 void inputBufferCallback(int numChannels, int numFrames, const float* samples, void* callbackContext)
 {
     MyAudioEngine* audioEngine = (__bridge MyAudioEngine*)callbackContext;
-    
+ 
     float smoothedPeak = audioEngine->smoothedPeakValue;
     float peak = 0;
     for (int i = 0; i < numFrames; i++) {
