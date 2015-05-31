@@ -38,7 +38,8 @@ typedef struct {
  * A callback for receiving input audio buffers.
  * @param numChannels The number of input channels.
  * @param numFrames The number of input frames.
- * @param samples The input sample buffer.
+ * @param samples The input sample buffer. Samples are interleaved, so sample for
+ * channel i of frame j is at \c samples[j * numChannels + i].
  * @param callbackContext A user specified pointer.
  */
 typedef void (*mnAudioInputCallback)(int numChannels,
@@ -50,7 +51,8 @@ typedef void (*mnAudioInputCallback)(int numChannels,
  * A callback for rendering output audio buffers.
  * @param numChannels The number of output channels.
  * @param numFrames The number of output frames.
- * @param samples The target output buffer.
+ * @param samples The target output buffer Samples are interleaved, so sample for 
+ * channel i of frame j is at \c samples[j * numChannels + i].
  * @param callbackContext A user specified pointer.
  */
 typedef void (*mnAudioOutputCallback)(int numChannels,

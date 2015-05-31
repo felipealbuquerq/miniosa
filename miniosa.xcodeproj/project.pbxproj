@@ -11,11 +11,12 @@
 		C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */; };
 		C13D92E11B15E13F00B1FD17 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92DB1B15E13F00B1FD17 /* AppDelegate.swift */; };
 		C13D92E21B15E13F00B1FD17 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C13D92DC1B15E13F00B1FD17 /* Info.plist */; };
-		C13D92E31B15E13F00B1FD17 /* MyAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92DE1B15E13F00B1FD17 /* MyAudioEngine.m */; };
+		C13D92E31B15E13F00B1FD17 /* SimpleSineSynth.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92DE1B15E13F00B1FD17 /* SimpleSineSynth.m */; };
 		C13D92E41B15E13F00B1FD17 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92E01B15E13F00B1FD17 /* ViewController.swift */; };
 		C188734D1B183E8000A84E68 /* MNAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C18873431B183E8000A84E68 /* MNAudioEngine.m */; };
 		C188734E1B183E8000A84E68 /* atomic_darwin.c in Sources */ = {isa = PBXBuildFile; fileRef = C18873461B183E8000A84E68 /* atomic_darwin.c */; };
 		C18873501B183E8000A84E68 /* fifo.c in Sources */ = {isa = PBXBuildFile; fileRef = C18873491B183E8000A84E68 /* fifo.c */; };
+		C1C39DD81B1B656B00C7A396 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C1C39DD71B1B656B00C7A396 /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,8 +25,8 @@
 		C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		C13D92DB1B15E13F00B1FD17 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C13D92DC1B15E13F00B1FD17 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C13D92DD1B15E13F00B1FD17 /* MyAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyAudioEngine.h; sourceTree = "<group>"; };
-		C13D92DE1B15E13F00B1FD17 /* MyAudioEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyAudioEngine.m; sourceTree = "<group>"; };
+		C13D92DD1B15E13F00B1FD17 /* SimpleSineSynth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleSineSynth.h; sourceTree = "<group>"; };
+		C13D92DE1B15E13F00B1FD17 /* SimpleSineSynth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleSineSynth.m; sourceTree = "<group>"; };
 		C13D92DF1B15E13F00B1FD17 /* ObjectiveCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveCBridge.h; sourceTree = "<group>"; };
 		C13D92E01B15E13F00B1FD17 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		C18873421B183E8000A84E68 /* MNAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNAudioEngine.h; sourceTree = "<group>"; };
@@ -34,6 +35,7 @@
 		C18873461B183E8000A84E68 /* atomic_darwin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = atomic_darwin.c; sourceTree = "<group>"; };
 		C18873491B183E8000A84E68 /* fifo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fifo.c; sourceTree = "<group>"; };
 		C188734A1B183E8000A84E68 /* fifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fifo.h; sourceTree = "<group>"; };
+		C1C39DD71B1B656B00C7A396 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				C13D928D1B14BB5B00B1FD17 /* Images.xcassets */,
+				C1C39DD71B1B656B00C7A396 /* Default-568h@2x.png */,
 				C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */,
 			);
 			path = res;
@@ -97,9 +100,9 @@
 			children = (
 				C13D92DB1B15E13F00B1FD17 /* AppDelegate.swift */,
 				C13D92DC1B15E13F00B1FD17 /* Info.plist */,
-				C13D92DD1B15E13F00B1FD17 /* MyAudioEngine.h */,
-				C13D92DE1B15E13F00B1FD17 /* MyAudioEngine.m */,
 				C13D92DF1B15E13F00B1FD17 /* ObjectiveCBridge.h */,
+				C13D92DD1B15E13F00B1FD17 /* SimpleSineSynth.h */,
+				C13D92DE1B15E13F00B1FD17 /* SimpleSineSynth.m */,
 				C13D92E01B15E13F00B1FD17 /* ViewController.swift */,
 			);
 			path = demo;
@@ -174,6 +177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */,
+				C1C39DD81B1B656B00C7A396 /* Default-568h@2x.png in Resources */,
 				C13D928F1B14BB5B00B1FD17 /* Images.xcassets in Resources */,
 				C13D92E21B15E13F00B1FD17 /* Info.plist in Resources */,
 			);
@@ -191,7 +195,7 @@
 				C188734E1B183E8000A84E68 /* atomic_darwin.c in Sources */,
 				C18873501B183E8000A84E68 /* fifo.c in Sources */,
 				C13D92E41B15E13F00B1FD17 /* ViewController.swift in Sources */,
-				C13D92E31B15E13F00B1FD17 /* MyAudioEngine.m in Sources */,
+				C13D92E31B15E13F00B1FD17 /* SimpleSineSynth.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -22,9 +22,46 @@
  SOFTWARE.
  */
 
-#ifndef miniosa_ObjectiveCBridge_h
-#define miniosa_ObjectiveCBridge_h
+#import "MNAudioEngine.h"
+#import "fifo.h"
 
-#import "SimpleSineSynth.h"
+@protocol SimpleSineSynthDelegate <NSObject>
 
-#endif
+-(void)inputLevelChanged:(float)newLevel;
+
+-(void)outputLevelChanged:(float)newLevel;
+
+@end
+
+/**
+ * A primitive proof of concept sine wave synthesizer.
+ */
+@interface SimpleSineSynth : MNAudioEngine
+{
+@public
+    mnFIFO toAudioThreadFifo;
+    mnFIFO fromAudioThreadFifo;
+    
+    float targetToneFrequency;
+    float smoothedToneFrequency;
+    
+    float targetToneAmplitude;
+    float smoothedToneAmplitude;
+    
+    float smoothedInputPeakValue;
+    float smoothedOutputPeakValue;
+    
+    float sinePhase;
+}
+
++(SimpleSineSynth*)sharedInstance;
+
+@property (readonly) float inputLevel;
+@property (readonly) float outputLevel;
+@property float toneFrequency;
+@property float toneAmplitude;
+@property (nonatomic, weak) id <SimpleSineSynthDelegate> delegate;
+
+-(void)update;
+
+@end

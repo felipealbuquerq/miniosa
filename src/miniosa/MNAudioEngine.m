@@ -152,9 +152,9 @@ static OSStatus remoteIOOutputCallback(void *inRefCon,
     ht = inTimeStamp->mSampleTime;
     if (delta > inNumberFrames && prevDelta > 0.0)
     {
-        printf("missed deadline, time since prev callback: %f samples, curr buffer size %d samples\n", delta, inNumberFrames);
-        //mnDebugPrintAudioSessionInfo();
-        //mnDebugPrintRemoteIOInfo();
+        printf("missed deadline, time since prev callback: %f samples, curr buffer size %d samples\n",
+               delta,
+               inNumberFrames);
     }
     prevDelta = delta;
 #endif //MN_DEBUG_CA_DEADLINE
@@ -561,7 +561,7 @@ static int instanceCount = 0;
                                                           &inputFormat,
                                                           sizeof(inputFormat))];
         
-        //Allocate buffer containing raw input samples
+        //Allocate a buffer to store raw input samples in
         memset(&caCallbackContext.inputBufferList, 0, sizeof(AudioBufferList));
         caCallbackContext.inputBufferList.mNumberBuffers = 1;
         caCallbackContext.inputBufferList.mBuffers[0].mNumberChannels = numInChannels;
@@ -570,7 +570,7 @@ static int instanceCount = 0;
         caCallbackContext.inputBufferList.mBuffers[0].mData =
             malloc(caCallbackContext.inputBufferList.mBuffers[0].mDataByteSize);
         
-        //Allocate buffer for storing float input values passed to the user
+        //Allocate a buffer to store float input values passed to the user
         caCallbackContext.inputScratchBuffer =
             malloc(maxNumberOfFramesPerSlice * sizeof(float) * numInChannels);
         
