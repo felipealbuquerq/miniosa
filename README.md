@@ -7,7 +7,7 @@ Miniosa is a **min**imalistic **iOS a**udio library providing easy, low latency 
 Add ``MNAudioEngine.h`` and ``MNAudioEngine.m`` to your project. Check out the demo app and the ``MNAudioEngine.h`` header for further information about the API.
 
 # Good to know
- * Minioasa audio buffers contain floating point samples with values between -1 and 1 (inclusive).
+ * Miniosa audio buffers contain floating point samples with values between -1 and 1 (inclusive).
  * A frame is a set of samples taken at the same point in time. For example, a stereo frame consists of two values (one per channel) and a mono frame is just a single value. 
  * Audio buffers contain interleaved samples, i.e frames are stored sequentially. An interleaved stereo buffer looks like this:
  
