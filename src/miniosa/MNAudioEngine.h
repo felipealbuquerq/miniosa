@@ -66,6 +66,15 @@ typedef void (*mnAudioOutputCallback)(int numChannels,
 @interface MNAudioEngine : NSObject<AVAudioSessionDelegate>
 
 /**
+ * If the user has not granted the app access to the microphone, an
+ * alert view is shown if starting the audio engine with input enabled. These properties
+ * allow customization of this alert view. If not set, sensible default values are used.
+ */
+@property NSString* micPermissionAlertTitle;
+@property NSString* micPermissionAlertMessage;
+@property NSString* micPermissionAlertButtonText;
+
+/**
  * Creates a new audio engine instance.
  * @param inputCallback A callback for receiving input audio data. Ignored if NULL.
  * @param outputCallback A callback for rendering output audio data. Ignored if NULL.

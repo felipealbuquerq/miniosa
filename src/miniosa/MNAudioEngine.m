@@ -196,6 +196,11 @@ static int instanceCount = 0;
 
 @property UIAlertView* micPermissionErrorAlert;
 
+@property NSString* defaultMicPermissionAlertTitle;
+@property NSString* defaultMicPermissionAlertMessage;
+@property NSString* defaultMicPermissionAlertButtonText;
+
+
 @end
 
 @implementation MNAudioEngine
@@ -217,6 +222,14 @@ static int instanceCount = 0;
     
     if (self) {
         instanceCount++;
+        
+        //set default text for mic permission error dialog
+        self.defaultMicPermissionAlertTitle = @"Error";
+        self.defaultMicPermissionAlertMessage =
+            @"You have not given permission to access the microphone. Go to the settings menu to fix this.";
+        self.defaultMicPermissionAlertButtonText = @"OK";
+        
+        //set up options struct and callback context
         if (optionsPtr) {
             memcpy(&desiredOptions, optionsPtr, sizeof(MNOptions));
         }
@@ -231,12 +244,6 @@ static int instanceCount = 0;
         caCallbackContext.inputCallback = inputCallback;
         caCallbackContext.outputCallback = outputCallback;
         caCallbackContext.userCallbackContext = context;
-        
-        self.micPermissionErrorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                                  message:@"You have not given permission to access the microphone. Go to the settings menu to fix this."
-                                                                 delegate:nil
-                                                        cancelButtonTitle:@"OK"
-                                                        otherButtonTitles:nil];
     }
     
     return self;
@@ -259,6 +266,22 @@ static int instanceCount = 0;
 {
     if (!hasShownMicPermissionErrorDialog) {
         hasShownMicPermissionErrorDialog = YES;
+        if (self.micPermissionErrorAlert == nil) {
+            //create the error alert. use custom text if provided.
+            NSString* alertTitle = self.micPermissionAlertTitle != nil ?
+                self.micPermissionAlertTitle : self.defaultMicPermissionAlertTitle;
+            NSString* alertMessage = self.micPermissionAlertMessage != nil ?
+                self.micPermissionAlertMessage : self.defaultMicPermissionAlertMessage;
+            NSString* alertButtonText = self.micPermissionAlertButtonText != nil ?
+                self.micPermissionAlertButtonText : self.defaultMicPermissionAlertButtonText;
+            
+            self.micPermissionErrorAlert = [[UIAlertView alloc] initWithTitle:alertTitle
+                                                                      message:alertMessage
+                                                                     delegate:nil
+                                                            cancelButtonTitle:alertButtonText
+                                                            otherButtonTitles:nil];
+        }
+        
         [self.micPermissionErrorAlert show];
     }
 }
