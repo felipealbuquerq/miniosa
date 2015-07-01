@@ -362,22 +362,22 @@ static int instanceCount = 0;
                          &sz);
     
     NSLog(@"    Remote IO info");
-    NSLog(@"        Input bits/channel %ld\n", inFmt.mBitsPerChannel);
-    NSLog(@"        Input bytes/frame %ld\n", inFmt.mBytesPerFrame);
-    NSLog(@"        Input bytes/packet %ld\n", inFmt.mBytesPerPacket);
-    NSLog(@"        Input channels/frame %ld\n", inFmt.mChannelsPerFrame);
-    NSLog(@"        Input format flags %ld\n", inFmt.mFormatFlags);
-    NSLog(@"        Input format ID %ld\n", inFmt.mFormatID);
-    NSLog(@"        Input frames per packet %ld\n", inFmt.mFramesPerPacket);
+    NSLog(@"        Input bits/channel %d\n", (unsigned int)inFmt.mBitsPerChannel);
+    NSLog(@"        Input bytes/frame %d\n", (unsigned int)inFmt.mBytesPerFrame);
+    NSLog(@"        Input bytes/packet %d\n", (unsigned int)inFmt.mBytesPerPacket);
+    NSLog(@"        Input channels/frame %d\n", (unsigned int)inFmt.mChannelsPerFrame);
+    NSLog(@"        Input format flags %d\n", (unsigned int)inFmt.mFormatFlags);
+    NSLog(@"        Input format ID %d\n", (unsigned int)inFmt.mFormatID);
+    NSLog(@"        Input frames per packet %d\n", (unsigned int)inFmt.mFramesPerPacket);
     NSLog(@"        Input sample rate %lf\n", inFmt.mSampleRate);
     NSLog(@"");
-    NSLog(@"        Output bits/channel %ld\n", outFmt.mBitsPerChannel);
-    NSLog(@"        Output bytes/frame %ld\n", outFmt.mBytesPerFrame);
-    NSLog(@"        Output bytes/packet %ld\n", outFmt.mBytesPerPacket);
-    NSLog(@"        Output channels/frame %ld\n", outFmt.mChannelsPerFrame);
-    NSLog(@"        Output format flags %ld\n", outFmt.mFormatFlags);
-    NSLog(@"        Output format ID %ld\n", outFmt.mFormatID);
-    NSLog(@"        Output frames per packet %ld\n", outFmt.mFramesPerPacket);
+    NSLog(@"        Output bits/channel %d\n", (unsigned int)outFmt.mBitsPerChannel);
+    NSLog(@"        Output bytes/frame %d\n", (unsigned int)outFmt.mBytesPerFrame);
+    NSLog(@"        Output bytes/packet %d\n", (unsigned int)outFmt.mBytesPerPacket);
+    NSLog(@"        Output channels/frame %d\n", (unsigned int)outFmt.mChannelsPerFrame);
+    NSLog(@"        Output format flags %d\n", (unsigned int)outFmt.mFormatFlags);
+    NSLog(@"        Output format ID %d\n", (unsigned int)outFmt.mFormatID);
+    NSLog(@"        Output frames per packet %d\n", (unsigned int)outFmt.mFramesPerPacket);
     NSLog(@"        Output sample rate %f\n", outFmt.mSampleRate);
 }
 
@@ -743,13 +743,13 @@ static int instanceCount = 0;
 -(void)logAudioSessionInfo
 {
     NSString* category = [AVAudioSession sharedInstance].category;
-    int numOutChannels = [AVAudioSession sharedInstance].outputNumberOfChannels;
-    int numInChannels = [AVAudioSession sharedInstance].inputNumberOfChannels;
+    NSInteger numOutChannels = [AVAudioSession sharedInstance].outputNumberOfChannels;
+    NSInteger numInChannels = [AVAudioSession sharedInstance].inputNumberOfChannels;
     
     NSLog(@"    Audio session info:");
     NSLog(@"        category %@", category);
-    NSLog(@"        %d input channels", numInChannels);
-    NSLog(@"        %d output channels", numOutChannels);
+    NSLog(@"        %ld input channels", (long)numInChannels);
+    NSLog(@"        %ld output channels", (long)numOutChannels);
 }
 
 #pragma mark AVAudioSessionDelegate

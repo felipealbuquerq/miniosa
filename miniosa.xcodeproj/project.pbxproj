@@ -10,7 +10,6 @@
 		C13D928F1B14BB5B00B1FD17 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C13D928D1B14BB5B00B1FD17 /* Images.xcassets */; };
 		C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C13D928E1B14BB5B00B1FD17 /* LaunchScreen.xib */; };
 		C13D92E11B15E13F00B1FD17 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92DB1B15E13F00B1FD17 /* AppDelegate.swift */; };
-		C13D92E21B15E13F00B1FD17 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C13D92DC1B15E13F00B1FD17 /* Info.plist */; };
 		C13D92E31B15E13F00B1FD17 /* SimpleSineSynth.m in Sources */ = {isa = PBXBuildFile; fileRef = C13D92DE1B15E13F00B1FD17 /* SimpleSineSynth.m */; };
 		C13D92E41B15E13F00B1FD17 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13D92E01B15E13F00B1FD17 /* ViewController.swift */; };
 		C188734D1B183E8000A84E68 /* MNAudioEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C18873431B183E8000A84E68 /* MNAudioEngine.m */; };
@@ -145,7 +144,8 @@
 		C13D92531B14BA4100B1FD17 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = Stuffmatic;
 				TargetAttributes = {
 					C13D925A1B14BA4100B1FD17 = {
@@ -179,7 +179,6 @@
 				C13D92901B14BB5B00B1FD17 /* LaunchScreen.xib in Resources */,
 				C1C39DD81B1B656B00C7A396 /* Default-568h@2x.png in Resources */,
 				C13D928F1B14BB5B00B1FD17 /* Images.xcassets in Resources */,
-				C13D92E21B15E13F00B1FD17 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +222,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -292,6 +292,7 @@
 				INFOPLIST_FILE = src/demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.stuffmatic.$(PRODUCT_NAME:rfc1034identifier)-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = src/demo/ObjectiveCBridge.h;
 			};
@@ -304,6 +305,7 @@
 				INFOPLIST_FILE = src/demo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.stuffmatic.$(PRODUCT_NAME:rfc1034identifier)-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = src/demo/ObjectiveCBridge.h;
 			};

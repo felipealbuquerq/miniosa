@@ -62,7 +62,7 @@ class ViewController: UIViewController, SimpleSineSynthDelegate{
     }
     
     private func createLabel(text:String, backgroundColor: UIColor) -> UILabel {
-        var label = UILabel()
+        let label = UILabel()
         label.font = defaultFont
         label.text = text
         label.backgroundColor = backgroundColor
@@ -72,7 +72,7 @@ class ViewController: UIViewController, SimpleSineSynthDelegate{
     }
     
     private func createButton(title:String, action:String, backgroundColor: UIColor) -> UIButton {
-        var button = UIButton()
+        let button = UIButton()
         button.setTitle(title, forState: .Normal)
         button.titleLabel!.font = defaultFont
         button.addTarget(self, action: Selector(action), forControlEvents: UIControlEvents.TouchUpInside)
@@ -89,7 +89,7 @@ class ViewController: UIViewController, SimpleSineSynthDelegate{
         frequencyControlView.userInteractionEnabled = true
         view.addSubview(frequencyControlView)
         
-        var panRecognizer = UILongPressGestureRecognizer(target: self, action: "frequencyControlPan:")
+        let panRecognizer = UILongPressGestureRecognizer(target: self, action: "frequencyControlPan:")
         panRecognizer.allowableMovement = CGFloat.max
         panRecognizer.minimumPressDuration = 0.0
         frequencyControlView.addGestureRecognizer(panRecognizer)
